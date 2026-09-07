@@ -48,9 +48,10 @@ struct HostLobby: View {
     let theme: GameTheme
     @Binding var name: String
     var body: some View { VStack(spacing: 18) {
-        Card { Label("HOST CONTROL CENTER", systemImage: "crown.fill").font(.title.bold()); Text("You choose category, team names, settings, and start the match.").multilineTextAlignment(.center) }
+        Card { Label("HOST CONTROL CENTER", systemImage: "crown.fill").font(.title.bold()); Text("You connect the room, randomize captains/teams, and start. Captains choose the category.").multilineTextAlignment(.center) }
         ConnectionCard(name: $name)
         HostSettings(theme: theme)
+        CaptainCategoryCard(theme: theme)
         TeamsEditor()
         StartCard()
     } }
@@ -63,7 +64,8 @@ struct PlayerLobby: View {
     var body: some View { VStack(spacing: 18) {
         Card { Image(systemName: theme.symbol).font(.system(size: 54)); Text(theme.name).font(.largeTitle.bold()); Text("Vote for a theme, edit your name, then wait for the host.").multilineTextAlignment(.center) }
         ConnectionCard(name: $name)
-        MyNameCard()
+        MyNameCard(theme: theme)
+        CaptainCategoryCard(theme: theme)
         ThemeVoteCard(selected: theme)
         TeamsList(theme: theme)
     } }
@@ -71,17 +73,43 @@ struct PlayerLobby: View {
 
 struct ConnectionCard: View { @EnvironmentObject var store: GameStore; @Binding var name: String; var body: some View { Card { TextField("Your name", text: $name).textFieldStyle(.roundedBorder).foregroundColor(.black).tint(.indigo).colorScheme(.light).font(.title3); HStack { Button("Host") { guard !name.trimmed.isEmpty else { return }; store.hostGame(name: name) }.buttonStyle(.borderedProminent); Button("Join") { guard !name.trimmed.isEmpty else { return }; store.joinGame(name: name) }.buttonStyle(.bordered) }.font(.title2); Text(store.network.statusText).font(.caption) } } }
 
-struct MyNameCard: View { @EnvironmentObject var store: GameStore; @State private var draft = ""; var body: some View { if let p = store.activePlayer { Card { TeamBadge(team: p.team); Text("You are on \(store.teamName(p.team))").font(.headline); TextField("Change your name", text: $draft).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { draft = p.name }; Button("Save Name") { store.send(.renamePlayer(p.id, draft)) }.buttonStyle(.borderedProminent).disabled(draft.trimmed.isEmpty) } } } }
+struct MyNameCard: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; @State private var draft = ""; var body: some View { if let p = store.activePlayer { Card { TeamBadge(team: p.team); Text(store.isCaptain(p) ? "You are the \(theme.receiver) / Team Captain" : "You are a \(theme.transmitter)").font(.headline); TextField("Change your name", text: $draft).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { draft = p.name }; Button("Save Name") { store.send(.renamePlayer(p.id, draft)) }.buttonStyle(.borderedProminent).disabled(draft.trimmed.isEmpty) } } } }
 
-struct HostSettings: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; var body: some View { Card { Text("Game Setup").font(.title2.bold()); Picker("Category", selection: Binding(get: { store.state.config.category }, set: { store.send(.setCategory($0)) })) { ForEach(categories, id: \.self) { Text($0).tag($0) } }.pickerStyle(.segmented); Picker("Theme", selection: Binding(get: { store.state.config.themeId }, set: { store.send(.setTheme($0)) })) { ForEach(GameTheme.all) { Text($0.name).tag($0.id) } }.pickerStyle(.menu); ThemeVoteSummary(); Stepper("Best of \(store.state.config.roundsToWin * 2 - 1)", value: Binding(get: { store.state.config.roundsToWin }, set: { store.send(.setRoundsToWin($0)) }), in: 2...4); Stepper("Statics: \(store.state.config.maxStatics)", value: Binding(get: { store.state.config.maxStatics }, set: { store.send(.setMaxStatics($0)) }), in: 2...3) } } }
+struct HostSettings: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; var body: some View { Card { Text("Host Setup").font(.title2.bold()); Picker("Theme", selection: Binding(get: { store.state.config.themeId }, set: { store.send(.setTheme($0)) })) { ForEach(GameTheme.all) { Text($0.name).tag($0.id) } }.pickerStyle(.menu); ThemeVoteSummary(); Stepper("Best of \(store.state.config.roundsToWin * 2 - 1)", value: Binding(get: { store.state.config.roundsToWin }, set: { store.send(.setRoundsToWin($0)) }), in: 2...4); Stepper("Statics: \(store.state.config.maxStatics)", value: Binding(get: { store.state.config.maxStatics }, set: { store.send(.setMaxStatics($0)) }), in: 2...3) } } }
 struct ThemeVoteSummary: View { @EnvironmentObject var store: GameStore; var body: some View { VStack(alignment: .leading) { Text("Theme votes").font(.headline); ForEach(GameTheme.all) { t in Text("\(t.name): \(store.state.themeVotes.values.filter { $0 == t.id }.count)").font(.caption) } }.frame(maxWidth: .infinity, alignment: .leading) } }
+
+struct CaptainCategoryCard: View {
+    @EnvironmentObject var store: GameStore
+    let theme: GameTheme
+    var body: some View {
+        let captainTeam = store.captainTeam(for: store.activePlayerId)
+        Card {
+            Text("Captain Category Vote").font(.title2.bold())
+            if let captainTeam {
+                Text("You are the \(theme.receiver) for \(store.teamName(captainTeam)). Pick your team's category.").multilineTextAlignment(.center)
+                Picker("Category", selection: Binding(get: { store.state.teamCategoryVotes[captainTeam] ?? "Everything" }, set: { store.send(.setTeamCategoryVote(captainTeam, $0)) })) {
+                    ForEach(categories, id: \.self) { Text($0).tag($0) }
+                }.pickerStyle(.wheel).frame(height: 120)
+            } else {
+                Text("Only the two \(theme.receiver)s / team captains choose categories.").multilineTextAlignment(.center).opacity(0.85)
+            }
+            HStack {
+                Text("\(store.teamName(.A)): \(store.state.teamCategoryVotes[.A] ?? "—")")
+                Spacer()
+                Text("\(store.teamName(.B)): \(store.state.teamCategoryVotes[.B] ?? "—")")
+            }.font(.caption.bold())
+            Text("If captains pick different categories, the app randomly chooses one 50/50 when the match starts.").font(.caption).opacity(0.75).multilineTextAlignment(.center)
+        }
+    }
+}
+
 struct ThemeVoteCard: View { @EnvironmentObject var store: GameStore; let selected: GameTheme; var body: some View { let myVote = store.activePlayerId.flatMap { store.state.themeVotes[$0] } ?? store.state.config.themeId; Card { Text("Vote Theme").font(.title2.bold()); Text("Your vote changes the room theme immediately.").font(.caption).opacity(0.8); ForEach(GameTheme.all) { t in Button { if let id = store.activePlayerId { store.send(.voteTheme(id, t.id)) } } label: { HStack { Label(t.name, systemImage: t.symbol); Spacer(); if myVote == t.id { Image(systemName: "checkmark.circle.fill").foregroundStyle(.green).font(.title2) } } }.buttonStyle(BigButton()) } } } }
 
-struct TeamsEditor: View { @EnvironmentObject var store: GameStore; @State private var a = ""; @State private var b = ""; var body: some View { Card { Text("Teams").font(.title2.bold()); TextField("Team A name", text: $a).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { a = store.teamName(.A) }; TextField("Team B name", text: $b).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { b = store.teamName(.B) }; HStack { Button("Save Team Names") { store.send(.setTeamName(.A, a)); store.send(.setTeamName(.B, b)) }.buttonStyle(.borderedProminent); Button("Auto Split") { store.send(.assignTeams) }.buttonStyle(.bordered) }; TeamsList(theme: GameTheme.all.first { $0.id == store.state.config.themeId } ?? GameTheme.all[0], editable: true) } } }
-struct StartCard: View { @EnvironmentObject var store: GameStore; var body: some View { Card { Button("START MATCH") { store.startOrNextRound() }.buttonStyle(.borderedProminent).font(.title.bold()).disabled(store.state.players.filter{$0.team == .A}.count < 2 || store.state.players.filter{$0.team == .B}.count < 2); Text("Need at least 2 players per team.").font(.caption).opacity(0.8) } } }
+struct TeamsEditor: View { @EnvironmentObject var store: GameStore; @State private var a = ""; @State private var b = ""; var body: some View { Card { Text("Teams + Captains").font(.title2.bold()); TextField("Team A name", text: $a).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { a = store.teamName(.A) }; TextField("Team B name", text: $b).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { b = store.teamName(.B) }; HStack { Button("Save Names") { store.send(.setTeamName(.A, a)); store.send(.setTeamName(.B, b)) }.buttonStyle(.borderedProminent); Button("Random Captains + Teams") { store.randomizeCaptainsAndTeams() }.buttonStyle(.bordered) }; TeamsList(theme: GameTheme.all.first { $0.id == store.state.config.themeId } ?? GameTheme.all[0], editable: true) } } }
+struct StartCard: View { @EnvironmentObject var store: GameStore; var body: some View { let ready = store.state.players.filter{$0.team == .A}.count >= 2 && store.state.players.filter{$0.team == .B}.count >= 2 && store.state.captainIds[.A] != nil && store.state.captainIds[.B] != nil; Card { Text("Final category: \(store.state.config.category)").font(.headline); Button("START MATCH") { store.startOrNextRound() }.buttonStyle(.borderedProminent).font(.title.bold()).disabled(!ready); Text("Randomize captains first. Need 2 players per team.").font(.caption).opacity(0.8) } } }
 
 struct TeamsList: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; var editable = false; var body: some View { HStack(alignment: .top, spacing: 12) { ForEach(TeamId.allCases, id: \.self) { team in VStack(spacing: 10) { Label(store.teamName(team), systemImage: team == .A ? theme.teamAIcon : theme.teamBIcon).font(.headline); ForEach(store.state.players.filter{$0.team == team}) { p in PlayerRow(player: p, editable: editable) } }.frame(maxWidth: .infinity).padding(10).background(team == .A ? Color.blue.opacity(0.20) : Color.red.opacity(0.20)).clipShape(RoundedRectangle(cornerRadius: 20)) } } } }
-struct PlayerRow: View { @EnvironmentObject var store: GameStore; let player: Player; let editable: Bool; @State private var draft = ""; var body: some View { VStack(spacing: 8) { if editable { TextField("Name", text: $draft).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { draft = player.name }; HStack { Button("A") { store.send(.setPlayerTeam(player.id, .A)) }; Button("B") { store.send(.setPlayerTeam(player.id, .B)) }; Button("Save") { store.send(.renamePlayer(player.id, draft)) } }.font(.caption) } else { Text(player.name + (store.activePlayerId == player.id ? " • YOU" : "")).font(.subheadline.bold()) } }.padding(10).frame(maxWidth: .infinity).background(player.team == .A ? Color.blue.opacity(0.45) : Color.red.opacity(0.45)).clipShape(RoundedRectangle(cornerRadius: 14)) } }
+struct PlayerRow: View { @EnvironmentObject var store: GameStore; let player: Player; let editable: Bool; @State private var draft = ""; var body: some View { VStack(spacing: 8) { let captain = store.isCaptain(player); if editable { HStack { if captain { Image(systemName: "crown.fill").foregroundStyle(.yellow) }; TextField("Name", text: $draft).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { draft = player.name } }; HStack { Button("A") { store.send(.setPlayerTeam(player.id, .A)) }; Button("B") { store.send(.setPlayerTeam(player.id, .B)) }; Button("Save") { store.send(.renamePlayer(player.id, draft)) } }.font(.caption) } else { HStack { if captain { Image(systemName: "crown.fill").foregroundStyle(.yellow) }; Text(player.name + (store.activePlayerId == player.id ? " • YOU" : "")).font(.subheadline.bold()) } } }.padding(10).frame(maxWidth: .infinity).background(player.team == .A ? Color.blue.opacity(0.45) : Color.red.opacity(0.45)).clipShape(RoundedRectangle(cornerRadius: 14)) } }
 
 struct RoundView: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; var body: some View { VStack(spacing: 18) { HUDView(theme: theme); if let p = store.activePlayer { TeamBadge(team: p.team); Text("You are \(p.name)").font(.headline) }; if let a = store.state.round?.announcement { Text(a).padding().frame(maxWidth: .infinity).background(.orange).clipShape(RoundedRectangle(cornerRadius: 16)) }; switch store.state.round?.phase { case .roleReveal: RoleRevealView(theme: theme); case .awaitingClue: ClueView(theme: theme); case .opposingDecision, .owningDecision: DecisionView(theme: theme); case .roundOver: RoundOverView(); default: EmptyView() } } } }
 struct HUDView: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; var body: some View { let r = store.state.round; Card { Text("Round \(store.state.roundNumber) • \(store.teamName(r?.clueingTeam ?? .A)) hint").font(.headline); HStack { ForEach(TeamId.allCases, id: \.self) { t in Text("\(store.teamName(t)): \(store.team(t)?.score ?? 0) • Static \(store.team(t)?.statics ?? 0)/\(store.state.config.maxStatics)").font(.caption.bold()).frame(maxWidth: .infinity).padding(8).background(t == .A ? Color.blue.opacity(0.35) : Color.red.opacity(0.35)).clipShape(RoundedRectangle(cornerRadius: 10)) } } } } }

@@ -18,7 +18,9 @@ Open `Crosstalk.xcodeproj` in Xcode 16+, select an iPhone 8-or-newer simulator/d
 - Keeps the phone awake while the app is open
 - Theme-specific team backgrounds and role names
 - Theme voting in the lobby
-- Host-only category/settings/team/player controls
+- Host-only settings/team/player controls
+- Randomized team captains and team assignment
+- Captains choose categories for their teams; split votes resolve 50/50 at start
 - Custom team names and editable player names
 - Written hint submission and hint history
 - Typed guesses with confirmation
