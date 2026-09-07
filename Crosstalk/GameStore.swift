@@ -49,7 +49,12 @@ final class GameStore: ObservableObject {
         state.players = [player]
     }
 
-    func startOrNextRound() { if let word = pack.words.first(where: { !state.usedSignals.contains($0.signal) }) { send(.startRound(word)) } }
+    func startOrNextRound() {
+        let words = pack.words.filter { state.config.category == "Everything" || $0.category == state.config.category }
+        if let word = words.first(where: { !state.usedSignals.contains($0.signal) }) ?? pack.words.first(where: { !state.usedSignals.contains($0.signal) }) { send(.startRound(word)) }
+    }
+
+    func teamName(_ team: TeamId) -> String { state.config.teamNames[team] ?? "Team \(team.rawValue)" }
     func playerName(_ id: String?) -> String { state.players.first { $0.id == id }?.name ?? "—" }
     func team(_ id: TeamId) -> TeamState? { state.teams[id] }
     func receiverTeamForDecision() -> TeamId? { guard let r = state.round else { return nil }; return r.phase == .opposingDecision ? (r.clueingTeam == .A ? .B : .A) : r.phase == .owningDecision ? r.clueingTeam : nil }
@@ -60,7 +65,7 @@ final class GameStore: ObservableObject {
 enum WordPackLoader {
     static func load() -> WordPack {
         guard let url = Bundle.main.url(forResource: "party-core", withExtension: "json"), let data = try? Data(contentsOf: url), let pack = try? JSONDecoder().decode(WordPack.self, from: data) else {
-            return WordPack(id: "party-core", name: "Party Core", words: [WordEntry(signal: "peanut butter", accepted: ["peanutbutter", "peanut-butter"], difficulty: 1)])
+            return WordPack(id: "party-core", name: "Party Core", words: [WordEntry(signal: "peanut butter", accepted: ["peanutbutter", "peanut-butter"], difficulty: 1, category: "Food")])
         }
         return pack
     }

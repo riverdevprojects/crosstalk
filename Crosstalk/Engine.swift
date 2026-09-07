@@ -1,6 +1,6 @@
 import Foundation
 
-enum GameAction: Codable { case addPlayer(String), upsertPlayer(Player), removePlayer(String), assignTeams, startRound(WordEntry), allReady, clueGiven(String), receiverPass(TeamId), receiverGuess(TeamId, String), nextRound(WordEntry), reset }
+enum GameAction: Codable { case addPlayer(String), upsertPlayer(Player), renamePlayer(String, String), setPlayerTeam(String, TeamId), removePlayer(String), assignTeams, setTeamName(TeamId, String), voteTheme(String, String), setTheme(String), setCategory(String), setRoundsToWin(Int), setMaxStatics(Int), startRound(WordEntry), allReady, clueGiven(String), receiverPass(TeamId), receiverGuess(TeamId, String), nextRound(WordEntry), reset }
 
 enum GuessMatcher {
     static func normalize(_ input: String) -> String {
@@ -38,8 +38,16 @@ struct GameEngine {
         case .upsertPlayer(var player):
             if let i = state.players.firstIndex(where: { $0.id == player.id }) { state.players[i].name = player.name }
             else { player.team = state.players.filter{$0.team == .A}.count <= state.players.filter{$0.team == .B}.count ? .A : .B; state.players.append(player) }
-        case .removePlayer(let id): state.players.removeAll { $0.id == id }
+        case .renamePlayer(let id, let name): if let i = state.players.firstIndex(where: { $0.id == id }) { state.players[i].name = name }
+        case .setPlayerTeam(let id, let team): if let i = state.players.firstIndex(where: { $0.id == id }) { state.players[i].team = team }
+        case .removePlayer(let id): state.players.removeAll { $0.id == id }; state.themeVotes.removeValue(forKey: id)
         case .assignTeams: for i in state.players.indices { state.players[i].team = i % 2 == 0 ? .A : .B }
+        case .setTeamName(let team, let name): state.config.teamNames[team] = name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Team \(team.rawValue)" : name
+        case .voteTheme(let playerId, let themeId): state.themeVotes[playerId] = themeId
+        case .setTheme(let themeId): state.config.themeId = themeId
+        case .setCategory(let category): state.config.category = category
+        case .setRoundsToWin(let rounds): state.config.roundsToWin = min(max(rounds, 2), 4)
+        case .setMaxStatics(let statics): state.config.maxStatics = min(max(statics, 2), 3)
         case .startRound(let word), .nextRound(let word): start(&state, word)
         case .allReady: state.round?.phase = .awaitingClue
         case .clueGiven(let clue):
