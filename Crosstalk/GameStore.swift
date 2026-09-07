@@ -50,8 +50,13 @@ final class GameStore: ObservableObject {
     }
 
     func startOrNextRound() {
-        let words = pack.words.filter { state.config.category == "Everything" || $0.category == state.config.category }
-        if let word = words.first(where: { !state.usedSignals.contains($0.signal) }) ?? pack.words.first(where: { !state.usedSignals.contains($0.signal) }) { send(.startRound(word)) }
+        let themed = pack.words.filter { ($0.theme ?? "signal") == state.config.themeId }
+        let themedCategory = themed.filter { state.config.category == "Everything" || $0.category == state.config.category }
+        let categoryAnyTheme = pack.words.filter { state.config.category == "Everything" || $0.category == state.config.category }
+        let pools = [themedCategory, themed, categoryAnyTheme, pack.words]
+        for pool in pools {
+            if let word = pool.first(where: { !state.usedSignals.contains($0.signal) }) { send(.startRound(word)); return }
+        }
     }
 
     func teamName(_ team: TeamId) -> String { state.config.teamNames[team] ?? "Team \(team.rawValue)" }
@@ -65,7 +70,7 @@ final class GameStore: ObservableObject {
 enum WordPackLoader {
     static func load() -> WordPack {
         guard let url = Bundle.main.url(forResource: "party-core", withExtension: "json"), let data = try? Data(contentsOf: url), let pack = try? JSONDecoder().decode(WordPack.self, from: data) else {
-            return WordPack(id: "party-core", name: "Party Core", words: [WordEntry(signal: "peanut butter", accepted: ["peanutbutter", "peanut-butter"], difficulty: 1, category: "Food")])
+            return WordPack(id: "party-core", name: "Party Core", words: [WordEntry(signal: "peanut butter", accepted: ["peanutbutter", "peanut-butter"], difficulty: 1, category: "Food", theme: "signal")])
         }
         return pack
     }
