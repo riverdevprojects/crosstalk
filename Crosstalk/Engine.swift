@@ -43,7 +43,10 @@ struct GameEngine {
         case .removePlayer(let id): state.players.removeAll { $0.id == id }; state.themeVotes.removeValue(forKey: id)
         case .assignTeams: for i in state.players.indices { state.players[i].team = i % 2 == 0 ? .A : .B }
         case .setTeamName(let team, let name): state.config.teamNames[team] = name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Team \(team.rawValue)" : name
-        case .voteTheme(let playerId, let themeId): state.themeVotes[playerId] = themeId
+        case .voteTheme(let playerId, let themeId):
+            state.themeVotes[playerId] = themeId
+            let counts = Dictionary(grouping: state.themeVotes.values, by: { $0 }).mapValues(\.count)
+            if let winner = counts.max(by: { $0.value == $1.value ? $0.key > $1.key : $0.value < $1.value })?.key { state.config.themeId = winner }
         case .setTheme(let themeId): state.config.themeId = themeId
         case .setCategory(let category): state.config.category = category
         case .setRoundsToWin(let rounds): state.config.roundsToWin = min(max(rounds, 2), 4)
