@@ -1,0 +1,1295 @@
+{
+  "id": "party-core",
+  "name": "Party Core",
+  "words": [
+    {
+      "signal": "airplane",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "apple",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "apron",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "backpack",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "balloon",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "banana",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "barn",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "basket",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "bathtub",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "beach",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "bear",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "beehive",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "bicycle",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "blanket",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "blender",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "book",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "bridge",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "broom",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "bucket",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "burger",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "butterfly",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "cactus",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "camera",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "candle",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "canoe",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "carrot",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "castle",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "cat",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "cereal",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "chair",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "chalk",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "cheese",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "cherry",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "clock",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "cloud",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "coconut",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "compass",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "cookie",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "couch",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "cowboy",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "crab",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "crayon",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "crown",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "cupcake",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "curtain",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "dinosaur",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "dog",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "dolphin",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "donut",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "door",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "dragon",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "drum",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "duck",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "eagle",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "earmuffs",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "elephant",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "envelope",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "feather",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "fence",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "fire truck",
+      "accepted": [
+        "fire truck",
+        "fire-truck"
+      ],
+      "difficulty": 3
+    },
+    {
+      "signal": "flashlight",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "flower",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "football",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "fork",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "fountain",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "frog",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "garden",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "guitar",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "hammer",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "hammock",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "hamburger",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "helmet",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "honey",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "horse",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "hot dog",
+      "accepted": [
+        "hot dog",
+        "hot-dog"
+      ],
+      "difficulty": 3
+    },
+    {
+      "signal": "house",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "ice cream",
+      "accepted": [
+        "ice cream",
+        "ice-cream"
+      ],
+      "difficulty": 2
+    },
+    {
+      "signal": "island",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "jacket",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "jellyfish",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "kite",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "ladder",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "lamp",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "lantern",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "lemon",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "lighthouse",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "lion",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "mailbox",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "map",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "microphone",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "mirror",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "monkey",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "moon",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "mountain",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "mushroom",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "necklace",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "notebook",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "octopus",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "orange",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "pancake",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "pencil",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "penguin",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "piano",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "pickle",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "pillow",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "pirate",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "pizza",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "popcorn",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "pumpkin",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "puzzle",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "rabbit",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "rainbow",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "rocket",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "sandwich",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "scarf",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "school",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "scissors",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "seashell",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "shark",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "sheep",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "skateboard",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "snowman",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "soccer",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "sock",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "spider",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "spoon",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "squirrel",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "star",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "suitcase",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "sunflower",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "swing",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "taco",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "telescope",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "tent",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "tiger",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "toothbrush",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "tractor",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "train",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "treasure",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "tree",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "trumpet",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "turtle",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "umbrella",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "volcano",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "wagon",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "watermelon",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "whale",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "window",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "wizard",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "zebra",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "zipper",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "anchor",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "ant",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "barbecue",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "baseball",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "bathtub",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "blanket",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "bowling",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "bread",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "broccoli",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "bubble",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "bus",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "button",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "cabin",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "canoe",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "carpet",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "castle",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "celery",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "chimney",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "circus",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "closet",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "comet",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "corn",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "desk",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "diamond",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "dice",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "doorbell",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "dragonfly",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "dresser",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "egg",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "engine",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "eraser",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "feather",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "frisbee",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "garage",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "glove",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "grapes",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "grasshopper",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "hairbrush",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "harmonica",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "haystack",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "helicopter",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "horseshoe",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "igloo",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "jelly",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "kayak",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "kettle",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "key",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "ladder",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "lemon",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "loaf",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "magnet",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "marble",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "mask",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "mitten",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "muffin",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "nest",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "noodle",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "ocean",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "pancake",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "parade",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "peanut",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "pear",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "pepper",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "picnic",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "pineapple",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "plane",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "plate",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "potato",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "puppet",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "radio",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "raindrop",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "ring",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "robot",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "rope",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "saddle",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "sailboat",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "sandwich",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "saucer",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "scooter",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "shovel",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "slide",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "snail",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "soap",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "spaceship",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "spiderweb",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "sponge",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "stapler",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "strawberry",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "submarine",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "suitcase",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "sun",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "teapot",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "telephone",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "toaster",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "tomato",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "toolbox",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "train",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "turtle",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "violin",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "waffle",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "wheel",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "whistle",
+      "accepted": [],
+      "difficulty": 1
+    },
+    {
+      "signal": "windmill",
+      "accepted": [],
+      "difficulty": 2
+    },
+    {
+      "signal": "yo-yo",
+      "accepted": [],
+      "difficulty": 3
+    },
+    {
+      "signal": "yogurt",
+      "accepted": [],
+      "difficulty": 1
+    }
+  ]
+}
