@@ -13,10 +13,13 @@ Open `Crosstalk.xcodeproj` in Xcode 16+, select an iPhone 8-or-newer simulator/d
 ## Included
 
 - Pure Swift rule engine and deterministic guess matcher
+- Nearby phone-to-phone multiplayer using MultipeerConnectivity (Bluetooth / peer-to-peer Wi‑Fi / local Wi‑Fi)
+- Host/join flow: one phone hosts, other phones join
+- Keeps the phone awake while the app is open
 - Native lobby/player setup
 - Team assignment, receiver/transmitter rotation, alternating openers
 - Role reveal, clue, ordered receiver decision, round over, match over screens
 - Static announcements and confirmation before spending a guess
 - JSON word pack loaded at startup
 
-This first commit is a local/native playable build. The engine is isolated so local networking or remote mode can be added without rewriting the rules.
+This build is native and locally networked for in-person play. The host phone is authoritative and broadcasts state to joined phones.

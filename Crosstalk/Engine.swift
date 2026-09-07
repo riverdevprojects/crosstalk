@@ -1,6 +1,6 @@
 import Foundation
 
-enum GameAction { case addPlayer(String), removePlayer(String), assignTeams, startRound(WordEntry), allReady, clueGiven, receiverPass(TeamId), receiverGuess(TeamId, String), nextRound(WordEntry), reset }
+enum GameAction: Codable { case addPlayer(String), upsertPlayer(Player), removePlayer(String), assignTeams, startRound(WordEntry), allReady, clueGiven, receiverPass(TeamId), receiverGuess(TeamId, String), nextRound(WordEntry), reset }
 
 enum GuessMatcher {
     static func normalize(_ input: String) -> String {
@@ -35,6 +35,9 @@ struct GameEngine {
     static func reduce(_ state: inout GameState, _ action: GameAction) {
         switch action {
         case .addPlayer(let name): state.players.append(Player(name: name, team: state.players.filter{$0.team == .A}.count <= state.players.filter{$0.team == .B}.count ? .A : .B))
+        case .upsertPlayer(var player):
+            if let i = state.players.firstIndex(where: { $0.id == player.id }) { state.players[i].name = player.name }
+            else { player.team = state.players.filter{$0.team == .A}.count <= state.players.filter{$0.team == .B}.count ? .A : .B; state.players.append(player) }
         case .removePlayer(let id): state.players.removeAll { $0.id == id }
         case .assignTeams: for i in state.players.indices { state.players[i].team = i % 2 == 0 ? .A : .B }
         case .startRound(let word), .nextRound(let word): start(&state, word)
@@ -49,8 +52,9 @@ struct GameEngine {
         let a = state.players.filter{$0.team == .A}, b = state.players.filter{$0.team == .B}; guard a.count >= 2 && b.count >= 2 else { return }
         state.roundNumber += 1; state.status = .inRound; state.usedSignals.insert(word.signal)
         let ar = a[(state.roundNumber - 1) % a.count].id, br = b[(state.roundNumber - 1) % b.count].id
-        state.teams[.A] = TeamState(id: .A, receiverId: ar, transmitterOrder: a.filter{$0.id != ar}.map(\.id))
-        state.teams[.B] = TeamState(id: .B, receiverId: br, transmitterOrder: b.filter{$0.id != br}.map(\.id))
+        let oldAScore = state.teams[.A]?.score ?? 0, oldBScore = state.teams[.B]?.score ?? 0
+        state.teams[.A] = TeamState(id: .A, receiverId: ar, transmitterOrder: a.filter{$0.id != ar}.map(\.id), score: oldAScore)
+        state.teams[.B] = TeamState(id: .B, receiverId: br, transmitterOrder: b.filter{$0.id != br}.map(\.id), score: oldBScore)
         state.round = RoundState(signal: word.signal, acceptedAnswers: [word.signal] + word.accepted, clueingTeam: state.roundNumber % 2 == 1 ? .A : .B, phase: .roleReveal)
     }
     private static func decide(_ state: inout GameState, team: TeamId, guess: String?) {

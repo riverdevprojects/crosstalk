@@ -6,6 +6,8 @@ enum Status: String, Codable { case lobby, inRound, matchOver }
 enum WinReason: String, Codable { case correctGuess, lockout }
 
 struct Player: Identifiable, Codable, Equatable { var id = UUID().uuidString; var name: String; var team: TeamId }
+
+enum NetworkMode: String, Codable { case offline, hosting, joining }
 struct TeamState: Codable, Equatable { var id: TeamId; var receiverId: String; var transmitterOrder: [String]; var rotationIndex = 0; var statics = 0; var score = 0 }
 struct TurnRecord: Codable, Equatable { var clueingTeam: TeamId; var transmitterId: String; var opposingAction: GuessAction?; var owningAction: GuessAction? }
 struct GuessAction: Codable, Equatable { var guess: String?; var correct: Bool; var passed: Bool { guess == nil } }

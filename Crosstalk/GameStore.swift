@@ -4,9 +4,51 @@ import Foundation
 final class GameStore: ObservableObject {
     @Published var state = GameState()
     @Published var activePlayerId: String?
+    @Published var network = MPCSession()
     let pack: WordPack = WordPackLoader.load()
+
+    init() {
+        network.configure { [weak self] message in self?.receive(message) }
+    }
     var activePlayer: Player? { state.players.first { $0.id == activePlayerId } }
-    func send(_ action: GameAction) { GameEngine.reduce(&state, action); if activePlayerId == nil { activePlayerId = state.players.first?.id } }
+    var isHost: Bool { network.mode == .hosting || network.mode == .offline }
+
+    func send(_ action: GameAction) {
+        if isHost {
+            GameEngine.reduce(&state, action)
+            if activePlayerId == nil { activePlayerId = state.players.first?.id }
+            network.send(.state(state))
+        } else {
+            network.send(.action(action))
+        }
+    }
+
+    func receive(_ message: NetworkMessage) {
+        switch message {
+        case .action(let action):
+            guard isHost else { return }
+            send(action)
+        case .state(let newState):
+            guard !isHost else { return }
+            state = newState
+        }
+    }
+
+    func hostGame(name: String) {
+        let id = activePlayerId ?? UUID().uuidString
+        activePlayerId = id
+        network.host()
+        send(.upsertPlayer(Player(id: id, name: name, team: .A)))
+    }
+
+    func joinGame(name: String) {
+        let id = activePlayerId ?? UUID().uuidString
+        activePlayerId = id
+        let player = Player(id: id, name: name, team: .A)
+        network.join(player: player)
+        state.players = [player]
+    }
+
     func startOrNextRound() { if let word = pack.words.first(where: { !state.usedSignals.contains($0.signal) }) { send(.startRound(word)) } }
     func playerName(_ id: String?) -> String { state.players.first { $0.id == id }?.name ?? "—" }
     func team(_ id: TeamId) -> TeamState? { state.teams[id] }

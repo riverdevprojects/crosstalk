@@ -4,6 +4,7 @@
 	classes = {};
 	objectVersion = 77;
 	objects = {
+		3B6721669258457D9FF5F150 /* MPCSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436CADCF199F4D33AF1928B7 /* MPCSession.swift */; };
 		E85981888FDD43C487283F29 /* CrosstalkApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 981D7797E2FE4960AC7CEB7D /* CrosstalkApp.swift */; };
 		12FEF50D232F4E78B92BD931 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACD6FF092194D57BA7A703E /* Models.swift */; };
 		A09C6332BEB040FBB39A4E3E /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0E33A35EE948258A0565CF /* Engine.swift */; };
@@ -11,6 +12,7 @@
 		46D0AD814586427F957FEFEE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508ED4B3AACA4EBB87EF6A74 /* ContentView.swift */; };
 		D9AB2F37C23E42FA8442B2B2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09BF7EFB2C824C8E92C98A72 /* Assets.xcassets */; };
 		0D90BA426B6B4618A6CA15C9 /* party-core.json in Resources */ = {isa = PBXBuildFile; fileRef = 0F88ACC8331143809B25BD99 /* party-core.json */; };
+		436CADCF199F4D33AF1928B7 /* MPCSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPCSession.swift; sourceTree = "<group>"; };
 		981D7797E2FE4960AC7CEB7D /* CrosstalkApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosstalkApp.swift; sourceTree = "<group>"; };
 		AACD6FF092194D57BA7A703E /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		6D0E33A35EE948258A0565CF /* Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
@@ -24,6 +26,7 @@
 				AACD6FF092194D57BA7A703E /* Models.swift */,
 				6D0E33A35EE948258A0565CF /* Engine.swift */,
 				BE3C7D67BE4148B58A736261 /* GameStore.swift */,
+				436CADCF199F4D33AF1928B7 /* MPCSession.swift */,
 				508ED4B3AACA4EBB87EF6A74 /* ContentView.swift */,
 				EFCE4171E77745C08BD74EA4 /* Info.plist */,
 				09BF7EFB2C824C8E92C98A72 /* Assets.xcassets */,
@@ -31,7 +34,8 @@
 				5C6E4DF837D64C38AF9A170E /* Products */,
 			); path = Crosstalk; sourceTree = "<group>"; };
 		5C6E4DF837D64C38AF9A170E /* Products */ = {isa = PBXGroup; children = (49C402A7E1F140D7B5B1B943 /* Crosstalk.app */,); name = Products; sourceTree = "<group>"; };
-		157B2E53F62644FFADE1C7BA /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = ( 				E85981888FDD43C487283F29 /* CrosstalkApp.swift in Sources */,
+		157B2E53F62644FFADE1C7BA /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = ( 
+				3B6721669258457D9FF5F150 /* MPCSession.swift in Sources */,				E85981888FDD43C487283F29 /* CrosstalkApp.swift in Sources */,
 				12FEF50D232F4E78B92BD931 /* Models.swift in Sources */,
 				A09C6332BEB040FBB39A4E3E /* Engine.swift in Sources */,
 				BDC8B52FC0D343BFA7C983D7 /* GameStore.swift in Sources */,
