@@ -84,7 +84,76 @@ struct DecisionView: View {
     @StateObject private var speech = SpeechRecognizer()
     @State private var guess = ""
     @State private var confirming = false
-    var body: some View { let team = store.receiverTeamForDecision(); let receiverId = team.flatMap { store.team($0)?.receiverId }; let canAct = store.activePlayerId == receiverId; Card { Text("Team \(team?.rawValue ?? "—") Receiver").font(.largeTitle.bold()).multilineTextAlignment(.center); Text(canAct ? "Tap the big box and say your answer, or type it." : "Waiting for \(store.playerName(receiverId))…").font(.headline).multilineTextAlignment(.center); Button(action: { if canAct { speech.toggle() } }) { VStack { Image(systemName: speech.isRecording ? "mic.circle.fill" : "mic.circle").font(.system(size: 76)); Text(speech.isRecording ? "Listening… tap to stop" : "Tap to speak guess").font(.title3.bold()) } .padding().frame(maxWidth: .infinity).background(canAct ? Color.white.opacity(0.18) : Color.gray.opacity(0.18)).clipShape(RoundedRectangle(cornerRadius: 22)) }.disabled(!canAct); TextField("Type guess", text: $guess).textFieldStyle(.roundedBorder).foregroundColor(.black).tint(.indigo).colorScheme(.light).font(.title2).disabled(!canAct).onChange(of: speech.text) { guess = $0 }; if let e = speech.errorText { Text(e).font(.caption).foregroundStyle(.yellow) }; HStack { Button("Pass") { if let team { store.send(.receiverPass(team)) }; guess = "" }.buttonStyle(.bordered).disabled(!canAct); Button("Lock Guess") { confirming = true }.buttonStyle(.borderedProminent).disabled(!canAct || guess.trimmed.isEmpty) } }.alert("Lock it in?", isPresented: $confirming) { Button("Cancel", role: .cancel) {}; Button("Submit") { speech.stop(); if let team { store.send(.receiverGuess(team, guess)) }; guess = "" } } message: { Text(guess) } }
+
+    var body: some View {
+        let team = store.receiverTeamForDecision()
+        let receiverId = team.flatMap { store.team($0)?.receiverId }
+        let canAct = store.activePlayerId == receiverId
+
+        Card {
+            if canAct {
+                Text("YOUR TURN TO GUESS")
+                    .font(.largeTitle.bold())
+                    .multilineTextAlignment(.center)
+                Text("Team \(team?.rawValue ?? "—") Receiver")
+                    .font(.title3.bold())
+                    .padding(.horizontal, 16).padding(.vertical, 8)
+                    .background(team == .A ? Color.blue.opacity(0.65) : Color.red.opacity(0.65))
+                    .clipShape(Capsule())
+                Text("Tap the big box and say your answer, or type it.")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+
+                Button(action: { speech.toggle() }) {
+                    VStack(spacing: 10) {
+                        Image(systemName: speech.isRecording ? "mic.circle.fill" : "mic.circle")
+                            .font(.system(size: 90))
+                        Text(speech.isRecording ? "Listening… tap to stop" : "Tap to speak guess")
+                            .font(.title2.bold())
+                    }
+                    .padding(24)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.white.opacity(0.22))
+                    .clipShape(RoundedRectangle(cornerRadius: 26))
+                }
+
+                TextField("Type guess", text: $guess)
+                    .textFieldStyle(.roundedBorder)
+                    .foregroundColor(.black)
+                    .tint(.indigo)
+                    .colorScheme(.light)
+                    .font(.title2)
+                    .onChange(of: speech.text) { guess = $0 }
+
+                if let e = speech.errorText { Text(e).font(.caption).foregroundStyle(.yellow) }
+
+                HStack(spacing: 14) {
+                    Button("Pass") { if let team { store.send(.receiverPass(team)) }; guess = "" }
+                        .buttonStyle(.bordered)
+                    Button("Lock Guess") { confirming = true }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(guess.trimmed.isEmpty)
+                }
+                .font(.title2)
+            } else {
+                Image(systemName: "ear.and.waveform")
+                    .font(.system(size: 72))
+                    .opacity(0.9)
+                Text("Waiting for the Receiver")
+                    .font(.largeTitle.bold())
+                    .multilineTextAlignment(.center)
+                Text("\(store.playerName(receiverId)) is deciding now.")
+                    .font(.title3.bold())
+                Text("No guess controls are shown on this phone.")
+                    .font(.subheadline)
+                    .opacity(0.8)
+            }
+        }
+        .alert("Lock it in?", isPresented: $confirming) {
+            Button("Cancel", role: .cancel) {}
+            Button("Submit") { speech.stop(); if let team { store.send(.receiverGuess(team, guess)) }; guess = "" }
+        } message: { Text(guess) }
+    }
 }
 
 struct RoundOverView: View { @EnvironmentObject var store: GameStore; var body: some View { Card { Text("Round Over").font(.largeTitle.bold()); Text("Signal: \(store.state.round?.signal ?? "")").font(.title2); Text("Team \(store.state.round?.winner?.rawValue ?? "—") wins by \(store.state.round?.winReason == .lockout ? "lockout" : "correct guess")"); LastHintsView(); Button("Next Round") { store.startOrNextRound() }.buttonStyle(.borderedProminent).disabled(store.state.status == .matchOver || !store.isHost) } } }
