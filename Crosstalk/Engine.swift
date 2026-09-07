@@ -1,6 +1,6 @@
 import Foundation
 
-enum GameAction: Codable { case addPlayer(String), upsertPlayer(Player), removePlayer(String), assignTeams, startRound(WordEntry), allReady, clueGiven, receiverPass(TeamId), receiverGuess(TeamId, String), nextRound(WordEntry), reset }
+enum GameAction: Codable { case addPlayer(String), upsertPlayer(Player), removePlayer(String), assignTeams, startRound(WordEntry), allReady, clueGiven(String), receiverPass(TeamId), receiverGuess(TeamId, String), nextRound(WordEntry), reset }
 
 enum GuessMatcher {
     static func normalize(_ input: String) -> String {
@@ -42,7 +42,12 @@ struct GameEngine {
         case .assignTeams: for i in state.players.indices { state.players[i].team = i % 2 == 0 ? .A : .B }
         case .startRound(let word), .nextRound(let word): start(&state, word)
         case .allReady: state.round?.phase = .awaitingClue
-        case .clueGiven: guard state.round?.phase == .awaitingClue else { return }; state.round?.phase = .opposingDecision; state.round?.announcement = nil
+        case .clueGiven(let clue):
+            guard var round = state.round, round.phase == .awaitingClue else { return }
+            let clueing = round.clueingTeam
+            let transmitterId = state.teams[clueing]!.transmitterOrder[state.teams[clueing]!.rotationIndex]
+            round.history.append(TurnRecord(clueingTeam: clueing, transmitterId: transmitterId, clueText: clue.trimmingCharacters(in: .whitespacesAndNewlines)))
+            round.phase = .opposingDecision; round.announcement = nil; state.round = round
         case .receiverPass(let team): decide(&state, team: team, guess: nil)
         case .receiverGuess(let team, let guess): decide(&state, team: team, guess: guess)
         case .reset: state = GameState()
@@ -63,7 +68,7 @@ struct GameEngine {
         guard (round.phase == .opposingDecision && team == opposing) || (round.phase == .owningDecision && team == clueing) else { return }
         let correct = guess.map { GuessMatcher.isCorrect($0, accepted: round.acceptedAnswers) } ?? false
         let action = GuessAction(guess: guess, correct: correct)
-        if round.history.isEmpty || round.history.last?.owningAction != nil { round.history.append(TurnRecord(clueingTeam: clueing, transmitterId: state.teams[clueing]!.transmitterOrder[state.teams[clueing]!.rotationIndex])) }
+        if round.history.isEmpty || round.history.last?.owningAction != nil { round.history.append(TurnRecord(clueingTeam: clueing, transmitterId: state.teams[clueing]!.transmitterOrder[state.teams[clueing]!.rotationIndex], clueText: nil)) }
         if round.phase == .opposingDecision { round.history[round.history.count-1].opposingAction = action } else { round.history[round.history.count-1].owningAction = action }
         if correct { finish(&state, &round, winner: team, reason: .correctGuess); return }
         if let g = guess { state.teams[team]!.statics += 1; round.announcement = "Team \(team.rawValue) guessed \"\(g)\" — Static (\(state.teams[team]!.statics)/\(state.config.maxStatics))"; if state.teams[team]!.statics >= state.config.maxStatics { finish(&state, &round, winner: team == .A ? .B : .A, reason: .lockout); return } }

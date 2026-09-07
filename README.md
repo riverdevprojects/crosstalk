@@ -16,6 +16,9 @@ Open `Crosstalk.xcodeproj` in Xcode 16+, select an iPhone 8-or-newer simulator/d
 - Nearby phone-to-phone multiplayer using MultipeerConnectivity (Bluetooth / peer-to-peer Wi‑Fi / local Wi‑Fi)
 - Host/join flow: one phone hosts, other phones join
 - Keeps the phone awake while the app is open
+- Team-specific backgrounds: Team A blue/waves, Team B red/lightning
+- Written hint submission and hint history
+- Optional speech-to-text guesses plus typed fallback
 - Native lobby/player setup
 - Team assignment, receiver/transmitter rotation, alternating openers
 - Role reveal, clue, ordered receiver decision, round over, match over screens

@@ -9,7 +9,7 @@ struct Player: Identifiable, Codable, Equatable { var id = UUID().uuidString; va
 
 enum NetworkMode: String, Codable { case offline, hosting, joining }
 struct TeamState: Codable, Equatable { var id: TeamId; var receiverId: String; var transmitterOrder: [String]; var rotationIndex = 0; var statics = 0; var score = 0 }
-struct TurnRecord: Codable, Equatable { var clueingTeam: TeamId; var transmitterId: String; var opposingAction: GuessAction?; var owningAction: GuessAction? }
+struct TurnRecord: Codable, Equatable { var clueingTeam: TeamId; var transmitterId: String; var clueText: String?; var opposingAction: GuessAction?; var owningAction: GuessAction? }
 struct GuessAction: Codable, Equatable { var guess: String?; var correct: Bool; var passed: Bool { guess == nil } }
 struct RoundState: Codable, Equatable { var signal: String; var acceptedAnswers: [String]; var clueingTeam: TeamId; var phase: Phase; var history: [TurnRecord] = []; var winner: TeamId?; var winReason: WinReason?; var announcement: String? }
 struct GameConfig: Codable, Equatable { var maxStatics = 2; var roundsToWin = 3; var wordPack = "party-core" }
