@@ -868,6 +868,25 @@ struct HUDView: View {
     }
 }
 
+/// Animated "auto-continue" indicator shown where a manual button used to be.
+struct AutoAdvanceHint: View {
+    let text: String
+    @State private var on = false
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(0..<3, id: \.self) { i in
+                Circle().fill(CT.magenta)
+                    .frame(width: 8, height: 8)
+                    .opacity(on ? 1 : 0.25)
+                    .scaleEffect(on ? 1 : 0.6)
+                    .animation(.easeInOut(duration: 0.55).repeatForever().delay(Double(i) * 0.16), value: on)
+            }
+            Text(text).font(CT.font(13, .black)).foregroundStyle(CT.inkSoft).kerning(1)
+        }
+        .onAppear { on = true }
+    }
+}
+
 struct RoleRevealView: View {
     @EnvironmentObject var store: GameStore
     let theme: GameTheme
@@ -891,9 +910,13 @@ struct RoleRevealView: View {
             } else {
                 Text("Waiting for your player…").font(CT.font(17, .bold)).foregroundStyle(CT.inkSoft)
             }
-            Button("EVERYONE IS READY") { store.send(.allReady) }
-                .buttonStyle(PartyButton.primary)
-                .disabled(!store.isHost)
+            AutoAdvanceHint(text: "GET READY…")
+        }
+        .task {
+            // Host is authoritative: auto-advance after a beat so everyone can read their role.
+            guard store.isHost else { return }
+            try? await Task.sleep(nanoseconds: 3_500_000_000)
+            if store.state.round?.phase == .roleReveal { store.send(.allReady) }
         }
     }
 }
@@ -1003,9 +1026,13 @@ struct RoundOverView: View {
             Text("\(store.teamName(store.state.round?.winner ?? .A)) wins by \(store.state.round?.winReason == .lockout ? "lockout" : "correct guess")!")
                 .font(CT.font(17, .black)).foregroundStyle(CT.ink).multilineTextAlignment(.center)
             LastHintsView()
-            Button("NEXT ROUND") { store.startOrNextRound() }
-                .buttonStyle(PartyButton.primary)
-                .disabled(store.state.status == .matchOver || !store.isHost)
+            AutoAdvanceHint(text: "NEXT ROUND STARTING…")
+        }
+        .task {
+            // Host is authoritative: pause so players can see the result, then roll on.
+            guard store.isHost else { return }
+            try? await Task.sleep(nanoseconds: 4_500_000_000)
+            if store.state.status == .inRound, store.state.round?.phase == .roundOver { store.startOrNextRound() }
         }
     }
 }
@@ -1025,8 +1052,13 @@ struct MatchOverView: View {
                     scoreChip(.A)
                     scoreChip(.B)
                 }
-                Button("NEW MATCH") { store.send(.reset) }
-                    .buttonStyle(PartyButton(fill: [CT.green, Color(red: 0.16, green: 0.68, blue: 0.42)], big: true))
+                if store.isHost {
+                    Button("NEW MATCH") { store.send(.reset) }
+                        .buttonStyle(PartyButton(fill: [CT.green, Color(red: 0.16, green: 0.68, blue: 0.42)], big: true))
+                } else {
+                    Text("Waiting for the host to start a new match…")
+                        .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+                }
             }
         }
     }
