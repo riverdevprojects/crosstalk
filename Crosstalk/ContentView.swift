@@ -400,7 +400,7 @@ struct ConnectionCard: View {
             } label: {
                 Label(mode == 0 ? "START HOSTING" : "FIND A GAME", systemImage: mode == 0 ? "wifi.router.fill" : "magnifyingglass")
             }
-            .buttonStyle(mode == 0 ? .primary : PartyButton(fill: [CT.purple, CT.magenta]))
+            .buttonStyle(mode == 0 ? PartyButton.primary : PartyButton(fill: [CT.purple, CT.magenta]))
             .disabled(name.trimmed.isEmpty)
 
             StatusPill(connected: connected, text: store.network.statusText)
@@ -455,7 +455,7 @@ struct MyNameCard: View {
                 GameField(placeholder: "Change your name", text: $draft)
                     .onAppear { draft = p.name }
                 Button("SAVE NAME") { store.send(.renamePlayer(p.id, draft)) }
-                    .buttonStyle(.primary)
+                    .buttonStyle(PartyButton.primary)
                     .disabled(draft.trimmed.isEmpty)
             }
         }
@@ -481,7 +481,7 @@ struct HostSettings: View {
                             if selected { Image(systemName: "checkmark.circle.fill") }
                         }
                     }
-                    .buttonStyle(selected ? PartyButton(fill: [CT.purple, CT.magenta]) : .secondary)
+                    .buttonStyle(selected ? PartyButton(fill: [CT.purple, CT.magenta]) : PartyButton.secondary)
                 }
             }
 
@@ -543,7 +543,7 @@ struct CaptainCategoryCard: View {
                                 if on { Image(systemName: "checkmark.circle.fill") }
                             }
                         }
-                        .buttonStyle(on ? PartyButton(fill: [CT.cyan, Color(red: 0.16, green: 0.6, blue: 0.85)]) : .secondary)
+                        .buttonStyle(on ? PartyButton(fill: [CT.cyan, Color(red: 0.16, green: 0.6, blue: 0.85)]) : PartyButton.secondary)
                     }
                 }
             } else {
@@ -589,7 +589,7 @@ struct ThemeVoteCard: View {
                             if on { Image(systemName: "checkmark.circle.fill") }
                         }
                     }
-                    .buttonStyle(on ? .gold : .secondary)
+                    .buttonStyle(on ? PartyButton.gold : PartyButton.secondary)
                 }
             }
         }
@@ -607,9 +607,9 @@ struct TeamsEditor: View {
             GameField(placeholder: "Team B name", text: $b).onAppear { b = store.teamName(.B) }
             HStack(spacing: 12) {
                 Button("SAVE NAMES") { store.send(.setTeamName(.A, a)); store.send(.setTeamName(.B, b)) }
-                    .buttonStyle(.secondary)
+                    .buttonStyle(PartyButton.secondary)
                 Button { store.randomizeCaptainsAndTeams() } label: { Label("RANDOMIZE", systemImage: "shuffle") }
-                    .buttonStyle(.primary)
+                    .buttonStyle(PartyButton.primary)
             }
             TeamsList(theme: GameTheme.all.first { $0.id == store.state.config.themeId } ?? GameTheme.all[0], editable: true)
         }
@@ -807,7 +807,7 @@ struct RoleRevealView: View {
                 Text("Waiting for your player…").font(CT.font(17, .bold)).foregroundStyle(CT.inkSoft)
             }
             Button("EVERYONE IS READY") { store.send(.allReady) }
-                .buttonStyle(.primary)
+                .buttonStyle(PartyButton.primary)
                 .disabled(!store.isHost)
         }
     }
@@ -832,7 +832,7 @@ struct ClueView: View {
             if isActive {
                 GameField(placeholder: "Type your one-word hint", text: $clue)
                 Button("SUBMIT HINT") { store.send(.clueGiven(clue)); clue = "" }
-                    .buttonStyle(.primary)
+                    .buttonStyle(PartyButton.primary)
                     .disabled(clue.trimmed.isEmpty)
             } else {
                 Text("Only \(store.playerName(active)) can submit the hint.")
@@ -884,9 +884,9 @@ struct DecisionView: View {
                 GameField(placeholder: "Type your guess", text: $guess, big: true)
                 HStack(spacing: 12) {
                     Button("PASS") { if let team { store.send(.receiverPass(team)) }; guess = "" }
-                        .buttonStyle(.secondary)
+                        .buttonStyle(PartyButton.secondary)
                     Button("LOCK GUESS") { confirming = true }
-                        .buttonStyle(.go)
+                        .buttonStyle(PartyButton.go)
                         .disabled(guess.trimmed.isEmpty)
                 }
             } else {
@@ -919,7 +919,7 @@ struct RoundOverView: View {
                 .font(CT.font(17, .black)).foregroundStyle(CT.ink).multilineTextAlignment(.center)
             LastHintsView()
             Button("NEXT ROUND") { store.startOrNextRound() }
-                .buttonStyle(.primary)
+                .buttonStyle(PartyButton.primary)
                 .disabled(store.state.status == .matchOver || !store.isHost)
         }
     }
