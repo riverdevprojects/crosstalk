@@ -34,19 +34,34 @@ final class GameStore: ObservableObject {
         }
     }
 
+    static func makeRoomCode() -> String {
+        // Unambiguous alphabet (no 0/O/1/I) for easy reading across a room.
+        let chars = Array("ABCDEFGHJKLMNPQRSTUVWXYZ23456789")
+        return String((0..<4).map { _ in chars.randomElement()! })
+    }
+
     func hostGame(name: String) {
         let id = activePlayerId ?? UUID().uuidString
         activePlayerId = id
-        network.host()
+        network.host(code: Self.makeRoomCode())
         send(.upsertPlayer(Player(id: id, name: name, team: .A)))
     }
 
-    func joinGame(name: String) {
+    func joinGame(name: String, code: String) {
         let id = activePlayerId ?? UUID().uuidString
         activePlayerId = id
         let player = Player(id: id, name: name, team: .A)
-        network.join(player: player)
+        network.join(player: player, code: code.uppercased())
         state.players = [player]
+    }
+
+    func leaveRoom() {
+        network.stop()
+        network.mode = .offline
+        network.statusText = "Not connected"
+        network.roomCode = ""
+        state = GameState()
+        activePlayerId = nil
     }
 
     func startOrNextRound() {

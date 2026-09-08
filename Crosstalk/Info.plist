@@ -11,7 +11,7 @@
 <key>CFBundleVersion</key><string>1</string>
 <key>LSRequiresIPhoneOS</key><true/>
 <key>NSLocalNetworkUsageDescription</key><string>Crosstalk connects nearby phones for local multiplayer.</string>
-<key>NSBonjourServices</key><array><string>_ctalk-game._tcp</string></array>
+<key>NSBonjourServices</key><array><string>_ctalk-game._tcp</string><string>_ctalk-game._udp</string></array>
 <key>UILaunchScreen</key><dict/>
 <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
 </dict></plist>

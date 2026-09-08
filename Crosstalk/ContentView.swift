@@ -48,26 +48,75 @@ enum CT {
 
 // MARK: - Root
 
+enum FlowScreen { case welcome, entry, hostSetup, joinCode }
+
 struct ContentView: View {
     @EnvironmentObject var store: GameStore
+    @State private var screen: FlowScreen = .welcome
+    @State private var playerName = ""
     var theme: GameTheme { GameTheme.all.first { $0.id == store.state.config.themeId } ?? GameTheme.all[0] }
+
     var body: some View {
         ZStack {
             PartyBackground()
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 20) {
-                    screen.padding(.horizontal, 18).padding(.bottom, 32)
-                }
-                .frame(maxWidth: .infinity)
-            }
+            content
         }
         .tint(CT.magenta)
     }
-    @ViewBuilder var screen: some View {
+
+    @ViewBuilder var content: some View {
         switch store.state.status {
-        case .lobby: LobbyView(theme: theme)
-        case .matchOver: MatchOverView()
-        case .inRound: RoundView(theme: theme)
+        case .inRound: PartyScroll { RoundView(theme: theme) }
+        case .matchOver: PartyScroll { MatchOverView() }
+        case .lobby: lobbyFlow
+        }
+    }
+
+    @ViewBuilder var lobbyFlow: some View {
+        switch screen {
+        case .welcome:
+            WelcomeView { withAnimation(.easeInOut) { screen = .entry } }
+                .transition(.opacity)
+        case .entry:
+            EntryView(
+                name: $playerName,
+                onHost: { store.hostGame(name: playerName); withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) { screen = .hostSetup } },
+                onJoin: { withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) { screen = .joinCode } }
+            )
+            .transition(.move(edge: .trailing).combined(with: .opacity))
+        case .hostSetup:
+            PartyScroll { HostLobby(theme: theme, onLeave: leave) }
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+        case .joinCode:
+            if !store.network.connectedNames.isEmpty {
+                PartyScroll { PlayerLobby(theme: theme, onLeave: leave) }
+                    .transition(.opacity)
+            } else {
+                JoinCodeView(
+                    name: $playerName,
+                    onJoin: { code in store.joinGame(name: playerName, code: code) },
+                    onBack: leave
+                )
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
+        }
+    }
+
+    func leave() {
+        store.leaveRoom()
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) { screen = .entry }
+    }
+}
+
+/// Standard scrollable party page.
+struct PartyScroll<Content: View>: View {
+    @ViewBuilder var content: Content
+    var body: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 20) { content }
+                .padding(.horizontal, 18)
+                .padding(.bottom, 32)
+                .frame(maxWidth: .infinity)
         }
     }
 }
@@ -324,32 +373,170 @@ struct LogoHeader: View {
     }
 }
 
-// MARK: - Lobby
+// MARK: - Flow: welcome / entry / join
 
-struct LobbyView: View {
-    @EnvironmentObject var store: GameStore
-    let theme: GameTheme
-    @State private var name = ""
+/// Header used on the flow pages, with an optional back/leave chip.
+struct FlowHeader: View {
+    var subtitle: String = "THE ULTIMATE PARTY GAME"
+    var backLabel: String = "BACK"
+    var onBack: (() -> Void)? = nil
     var body: some View {
-        VStack(spacing: 20) {
-            LogoHeader()
-            if store.isHost { HostLobby(theme: theme, name: $name) } else { PlayerLobby(theme: theme, name: $name) }
+        VStack(spacing: 10) {
+            if let onBack {
+                HStack {
+                    Button { onBack() } label: {
+                        Label(backLabel, systemImage: "chevron.left")
+                            .font(CT.font(13, .black)).foregroundStyle(.white)
+                            .padding(.vertical, 8).padding(.horizontal, 14)
+                            .background(Capsule().fill(.white.opacity(0.20)))
+                            .overlay(Capsule().stroke(.white.opacity(0.3), lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                    Spacer()
+                }
+            }
+            LogoHeader(subtitle: subtitle)
         }
     }
 }
 
+/// Animated splash / loading screen shown on launch.
+struct WelcomeView: View {
+    let onDone: () -> Void
+    @State private var progress: CGFloat = 0
+    @State private var bounce = false
+    var body: some View {
+        VStack(spacing: 34) {
+            Spacer()
+            LogoHeader(subtitle: "GUESS • COMPETE • WIN")
+                .scaleEffect(bounce ? 1.03 : 0.97)
+            // playful loading bar
+            VStack(spacing: 14) {
+                ZStack(alignment: .leading) {
+                    Capsule().fill(.white.opacity(0.22)).frame(height: 16)
+                    GeometryReader { geo in
+                        Capsule()
+                            .fill(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .leading, endPoint: .trailing))
+                            .frame(width: max(16, geo.size.width * progress), height: 16)
+                            .shadow(color: CT.orange.opacity(0.6), radius: 6)
+                    }
+                    .frame(height: 16)
+                }
+                .frame(height: 16)
+                .frame(maxWidth: 240)
+                Text("LOADING…")
+                    .font(CT.font(15, .black)).foregroundStyle(.white.opacity(0.9)).kerning(3)
+            }
+            Spacer()
+            Spacer()
+        }
+        .padding(.horizontal, 24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .task {
+            withAnimation(.easeInOut(duration: 1.6)) { progress = 1 }
+            withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { bounce = true }
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            onDone()
+        }
+    }
+}
+
+/// Name + Host/Join chooser. Leads to a dedicated page for each mode.
+struct EntryView: View {
+    @Binding var name: String
+    let onHost: () -> Void
+    let onJoin: () -> Void
+    @State private var mode = 0 // 0 = Host, 1 = Join
+    var body: some View {
+        PartyScroll {
+            LogoHeader()
+            GamePanel(accent: CT.magenta) {
+                SectionLabel(text: "Your Name", icon: "person.fill", color: CT.magenta)
+                GameField(placeholder: "Enter your name…", text: $name)
+
+                SectionLabel(text: "Choose Mode", icon: "gamecontroller.fill", color: CT.magenta)
+                ModeSelector(mode: $mode)
+
+                Text(mode == 0 ? "Create a room and get a code your friends type in." : "Type the host's room code to jump into their game.")
+                    .font(CT.font(14, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+
+                Button {
+                    guard !name.trimmed.isEmpty else { return }
+                    if mode == 0 { onHost() } else { onJoin() }
+                } label: {
+                    Label(mode == 0 ? "CREATE ROOM" : "ENTER A CODE", systemImage: "arrow.right")
+                }
+                .buttonStyle(mode == 0 ? PartyButton.primary : PartyButton(fill: [CT.purple, CT.magenta]))
+                .disabled(name.trimmed.isEmpty)
+            }
+        }
+    }
+}
+
+/// Room-code entry page for joiners; shows a searching state after submit.
+struct JoinCodeView: View {
+    @EnvironmentObject var store: GameStore
+    @Binding var name: String
+    let onJoin: (String) -> Void
+    let onBack: () -> Void
+    @State private var code = ""
+    @State private var submitted = false
+    @State private var spin = false
+    var body: some View {
+        PartyScroll {
+            FlowHeader(subtitle: "JOIN A ROOM", onBack: { submitted = false; onBack() })
+            GamePanel(accent: CT.purple) {
+                if submitted {
+                    Image(systemName: "dot.radiowaves.left.and.right")
+                        .font(.system(size: 52, weight: .black))
+                        .foregroundStyle(LinearGradient(colors: [CT.purple, CT.magenta], startPoint: .top, endPoint: .bottom))
+                        .rotationEffect(.degrees(spin ? 8 : -8))
+                    Text("SEARCHING FOR \(code)").font(CT.font(22, .black)).foregroundStyle(CT.ink)
+                    Text(store.network.statusText).font(CT.font(14, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+                    Text("Make sure the host is nearby and their screen shows this code.")
+                        .font(CT.font(13, .medium)).foregroundStyle(CT.inkSoft.opacity(0.8)).multilineTextAlignment(.center)
+                    Button("CANCEL") { submitted = false; onBack() }
+                        .buttonStyle(PartyButton.secondary)
+                } else {
+                    SectionLabel(text: "Room Code", icon: "number", color: CT.purple)
+                    GameField(placeholder: "ABCD", text: $code, big: true)
+                        .textInputAutocapitalization(.characters)
+                        .autocorrectionDisabled()
+                        .onChange(of: code) { code = String($0.uppercased().filter { $0.isLetter || $0.isNumber }.prefix(4)) }
+                    Text("Ask the host for their 4-character room code.")
+                        .font(CT.font(14, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+                    Button {
+                        let c = code.trimmed.uppercased()
+                        guard !c.isEmpty else { return }
+                        submitted = true
+                        onJoin(c)
+                    } label: {
+                        Label("JOIN GAME", systemImage: "arrow.right.circle.fill")
+                    }
+                    .buttonStyle(PartyButton.primary)
+                    .disabled(code.trimmed.isEmpty)
+                }
+            }
+        }
+        .onAppear { withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) { spin = true } }
+    }
+}
+
+// MARK: - Lobby pages
+
 struct HostLobby: View {
     @EnvironmentObject var store: GameStore
     let theme: GameTheme
-    @Binding var name: String
+    var onLeave: () -> Void = {}
     var body: some View {
         VStack(spacing: 20) {
+            FlowHeader(subtitle: "HOST CONTROL", backLabel: "LEAVE", onBack: onLeave)
+            RoomCodeCard()
             GamePanel(accent: CT.gold) {
                 SectionLabel(text: "Host Control Center", icon: "crown.fill", color: CT.orange)
-                Text("You connect the room, randomize captains & teams, and start. Captains choose the category.")
+                Text("Randomize captains & teams, then start. Captains choose the category.")
                     .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
             }
-            ConnectionCard(name: $name)
             HostSettings(theme: theme)
             CaptainCategoryCard(theme: theme)
             TeamsEditor()
@@ -361,18 +548,19 @@ struct HostLobby: View {
 struct PlayerLobby: View {
     @EnvironmentObject var store: GameStore
     let theme: GameTheme
-    @Binding var name: String
+    var onLeave: () -> Void = {}
     var body: some View {
         VStack(spacing: 20) {
+            FlowHeader(subtitle: "IN THE LOBBY", backLabel: "LEAVE", onBack: onLeave)
             GamePanel(accent: CT.purple) {
                 Image(systemName: theme.symbol)
                     .font(.system(size: 46, weight: .black))
                     .foregroundStyle(LinearGradient(colors: [CT.purple, CT.magenta], startPoint: .top, endPoint: .bottom))
                 Text(theme.name.uppercased()).font(CT.font(30, .black)).foregroundStyle(CT.ink)
-                Text("Vote for a theme, set your name, then wait for the host.")
+                Text("Vote for a theme, set your name, then wait for the host to start.")
                     .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+                StatusPill(connected: !store.network.connectedNames.isEmpty, text: store.network.connectedNames.isEmpty ? "Connecting…" : "Connected")
             }
-            ConnectionCard(name: $name)
             MyNameCard(theme: theme)
             CaptainCategoryCard(theme: theme)
             ThemeVoteCard(selected: theme)
@@ -381,29 +569,22 @@ struct PlayerLobby: View {
     }
 }
 
-struct ConnectionCard: View {
+/// Big shareable room code for the host page.
+struct RoomCodeCard: View {
     @EnvironmentObject var store: GameStore
-    @Binding var name: String
-    @State private var mode: Int = 0 // 0 = Host, 1 = Join
-    var connected: Bool { !store.network.connectedNames.isEmpty }
+    var count: Int { store.network.connectedNames.count }
     var body: some View {
-        GamePanel(accent: CT.magenta) {
-            SectionLabel(text: "Your Name", icon: "person.fill", color: CT.magenta)
-            GameField(placeholder: "Enter your name…", text: $name)
-
-            SectionLabel(text: "Mode", icon: "gamecontroller.fill", color: CT.magenta)
-            ModeSelector(mode: $mode)
-
-            Button {
-                guard !name.trimmed.isEmpty else { return }
-                if mode == 0 { store.hostGame(name: name) } else { store.joinGame(name: name) }
-            } label: {
-                Label(mode == 0 ? "START HOSTING" : "FIND A GAME", systemImage: mode == 0 ? "wifi.router.fill" : "magnifyingglass")
-            }
-            .buttonStyle(mode == 0 ? PartyButton.primary : PartyButton(fill: [CT.purple, CT.magenta]))
-            .disabled(name.trimmed.isEmpty)
-
-            StatusPill(connected: connected, text: store.network.statusText)
+        GamePanel(accent: CT.gold) {
+            SectionLabel(text: "Room Code", icon: "number", color: CT.orange)
+            Text(store.network.roomCode.isEmpty ? "----" : store.network.roomCode)
+                .font(CT.font(56, .black))
+                .kerning(10)
+                .foregroundStyle(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom))
+                .lineLimit(1).minimumScaleFactor(0.5)
+                .shadow(color: CT.orange.opacity(0.3), radius: 6, y: 3)
+            Text("Friends pick JOIN and type this code to enter your room.")
+                .font(CT.font(13, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+            StatusPill(connected: count > 0, text: count == 0 ? "Waiting for players" : "\(count) connected")
         }
     }
 }

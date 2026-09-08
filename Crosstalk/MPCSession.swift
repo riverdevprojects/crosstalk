@@ -14,6 +14,8 @@ final class MPCSession: NSObject, ObservableObject {
     @Published var mode: NetworkMode = .offline
     @Published var connectedNames: [String] = []
     @Published var statusText = "Not connected"
+    @Published var roomCode = ""
+    private var joinCode: String?
 
     private let peerID = MCPeerID(displayName: UIDevice.current.name)
     private lazy var session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: .required)
@@ -27,25 +29,28 @@ final class MPCSession: NSObject, ObservableObject {
         session.delegate = self
     }
 
-    func host() {
+    func host(code: String) {
         stop()
         mode = .hosting
+        roomCode = code
+        joinCode = nil
         session.delegate = self
-        advertiser = MCNearbyServiceAdvertiser(peer: peerID, discoveryInfo: nil, serviceType: serviceType)
+        advertiser = MCNearbyServiceAdvertiser(peer: peerID, discoveryInfo: ["code": code], serviceType: serviceType)
         advertiser?.delegate = self
         advertiser?.startAdvertisingPeer()
-        statusText = "Hosting over Bluetooth / local Wi‑Fi"
+        statusText = "Room open • share the code"
     }
 
-    func join(player: Player) {
+    func join(player: Player, code: String) {
         stop()
         pendingJoinPlayer = player
+        joinCode = code
         mode = .joining
         session.delegate = self
         browser = MCNearbyServiceBrowser(peer: peerID, serviceType: serviceType)
         browser?.delegate = self
         browser?.startBrowsingForPeers()
-        statusText = "Looking for host…"
+        statusText = "Searching for room \(code)…"
     }
 
     func stop() {
@@ -69,7 +74,13 @@ extension MPCSession: MCNearbyServiceAdvertiserDelegate {
 
 extension MPCSession: MCNearbyServiceBrowserDelegate {
     nonisolated func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
-        Task { @MainActor in browser.invitePeer(peerID, to: self.session, withContext: nil, timeout: 10) }
+        let peerCode = info?["code"]
+        Task { @MainActor in
+            // Only connect to the host advertising the code this player typed in.
+            guard let wanted = self.joinCode else { return }
+            guard peerCode == wanted else { return }
+            browser.invitePeer(peerID, to: self.session, withContext: nil, timeout: 10)
+        }
     }
     nonisolated func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {}
 }
