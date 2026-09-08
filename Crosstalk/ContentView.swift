@@ -534,11 +534,10 @@ struct HostLobby: View {
             RoomCodeCard()
             GamePanel(accent: CT.gold) {
                 SectionLabel(text: "Host Control Center", icon: "crown.fill", color: CT.orange)
-                Text("Randomize captains & teams, then start. Captains choose the category.")
+                Text("Pick the theme, category and settings, sort the teams, then start. Each round a random player on each team becomes the one who has to guess.")
                     .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
             }
             HostSettings(theme: theme)
-            CaptainCategoryCard(theme: theme)
             TeamsEditor()
             StartCard()
         }
@@ -557,13 +556,11 @@ struct PlayerLobby: View {
                     .font(.system(size: 46, weight: .black))
                     .foregroundStyle(LinearGradient(colors: [CT.purple, CT.magenta], startPoint: .top, endPoint: .bottom))
                 Text(theme.name.uppercased()).font(CT.font(30, .black)).foregroundStyle(CT.ink)
-                Text("Vote for a theme, set your name, then wait for the host to start.")
+                Text("Set your name and wait for the host to start. Each round, one random player per team has to guess.")
                     .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
                 StatusPill(connected: !store.network.connectedNames.isEmpty, text: store.network.connectedNames.isEmpty ? "Connecting…" : "Connected")
             }
             MyNameCard(theme: theme)
-            CaptainCategoryCard(theme: theme)
-            ThemeVoteCard(selected: theme)
             TeamsList(theme: theme)
         }
     }
@@ -631,8 +628,8 @@ struct MyNameCard: View {
         if let p = store.activePlayer {
             GamePanel(accent: CT.team(p.team).first!) {
                 TeamBadge(team: p.team)
-                Text(store.isCaptain(p) ? "You are the \(theme.receiver) • Team Captain" : "You are a \(theme.transmitter)")
-                    .font(CT.font(17, .bold)).foregroundStyle(CT.ink).multilineTextAlignment(.center)
+                Text("Each round, one player per team is randomly picked to be the \(theme.receiver) and guess — it could be you.")
+                    .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
                 GameField(placeholder: "Change your name", text: $draft)
                     .onAppear { draft = p.name }
                 Button("SAVE NAME") { store.send(.renamePlayer(p.id, draft)) }
@@ -666,7 +663,21 @@ struct HostSettings: View {
                 }
             }
 
-            ThemeVoteSummary()
+            SectionLabel(text: "Category", icon: "square.grid.2x2.fill", color: CT.cyan)
+            VStack(spacing: 10) {
+                ForEach(categories, id: \.self) { cat in
+                    let on = store.state.config.category == cat
+                    Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { store.send(.setCategory(cat)) } } label: {
+                        HStack {
+                            Image(systemName: categoryIcons[cat] ?? "circle.fill")
+                            Text(cat.uppercased())
+                            Spacer()
+                            if on { Image(systemName: "checkmark.circle.fill") }
+                        }
+                    }
+                    .buttonStyle(on ? PartyButton(fill: [CT.cyan, Color(red: 0.16, green: 0.6, blue: 0.85)]) : PartyButton.secondary)
+                }
+            }
 
             GameStepper(label: "Rounds", icon: "flag.checkered", display: "Best of \(store.state.config.roundsToWin * 2 - 1)", accent: CT.magenta,
                         canDown: store.state.config.roundsToWin > 2, canUp: store.state.config.roundsToWin < 4,
@@ -680,118 +691,19 @@ struct HostSettings: View {
     }
 }
 
-struct ThemeVoteSummary: View {
-    @EnvironmentObject var store: GameStore
-    var body: some View {
-        VStack(spacing: 8) {
-            SectionLabel(text: "Theme Votes", icon: "hand.thumbsup.fill", color: CT.purple)
-            ForEach(GameTheme.all) { t in
-                let count = store.state.themeVotes.values.filter { $0 == t.id }.count
-                HStack {
-                    Image(systemName: t.symbol).foregroundStyle(CT.magenta).frame(width: 24)
-                    Text(t.name).font(CT.font(15, .bold)).foregroundStyle(CT.ink)
-                    Spacer()
-                    Text("\(count)")
-                        .font(CT.font(15, .black)).foregroundStyle(.white)
-                        .frame(minWidth: 30).padding(.vertical, 4).padding(.horizontal, 8)
-                        .background(Capsule().fill(count > 0 ? CT.magenta : Color(white: 0.75)))
-                        .contentTransition(.numericText())
-                }
-            }
-        }
-    }
-}
-
-struct CaptainCategoryCard: View {
-    @EnvironmentObject var store: GameStore
-    let theme: GameTheme
-    var body: some View {
-        let captainTeam = store.captainTeam(for: store.activePlayerId)
-        GamePanel(accent: CT.cyan) {
-            SectionLabel(text: "Captain Category Vote", icon: "checklist", color: CT.cyan)
-            if let captainTeam {
-                Text("You are the \(theme.receiver) for \(store.teamName(captainTeam)). Pick your team's category.")
-                    .font(CT.font(14, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
-                let selected = store.state.teamCategoryVotes[captainTeam] ?? "Everything"
-                VStack(spacing: 10) {
-                    ForEach(categories, id: \.self) { cat in
-                        let on = selected == cat
-                        Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { store.send(.setTeamCategoryVote(captainTeam, cat)) } } label: {
-                            HStack {
-                                Image(systemName: categoryIcons[cat] ?? "circle.fill")
-                                Text(cat.uppercased())
-                                Spacer()
-                                if on { Image(systemName: "checkmark.circle.fill") }
-                            }
-                        }
-                        .buttonStyle(on ? PartyButton(fill: [CT.cyan, Color(red: 0.16, green: 0.6, blue: 0.85)]) : PartyButton.secondary)
-                    }
-                }
-            } else {
-                Text("Only the two \(theme.receiver)s / team captains choose categories.")
-                    .font(CT.font(14, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
-            }
-            HStack {
-                categoryChip(.A)
-                Spacer()
-                categoryChip(.B)
-            }
-            Text("If captains pick different categories, the app randomly chooses one 50/50 at match start.")
-                .font(CT.font(12, .medium)).foregroundStyle(CT.inkSoft.opacity(0.8)).multilineTextAlignment(.center)
-        }
-    }
-    func categoryChip(_ t: TeamId) -> some View {
-        VStack(spacing: 4) {
-            Text(store.teamName(t).uppercased()).font(CT.font(11, .black)).foregroundStyle(CT.team(t).first!)
-            Text(store.state.teamCategoryVotes[t] ?? "—").font(CT.font(14, .bold)).foregroundStyle(CT.ink)
-        }
-    }
-}
-
-struct ThemeVoteCard: View {
-    @EnvironmentObject var store: GameStore
-    let selected: GameTheme
-    var body: some View {
-        let myVote = store.activePlayerId.flatMap { store.state.themeVotes[$0] } ?? store.state.config.themeId
-        GamePanel(accent: CT.gold) {
-            SectionLabel(text: "Vote Theme", icon: "star.fill", color: CT.orange)
-            Text("Your vote changes the room theme immediately.")
-                .font(CT.font(13, .medium)).foregroundStyle(CT.inkSoft)
-            VStack(spacing: 10) {
-                ForEach(GameTheme.all) { t in
-                    let on = myVote == t.id
-                    Button {
-                        if let id = store.activePlayerId { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { store.send(.voteTheme(id, t.id)) } }
-                    } label: {
-                        HStack {
-                            Image(systemName: t.symbol)
-                            Text(t.name.uppercased())
-                            Spacer()
-                            if on { Image(systemName: "checkmark.circle.fill") }
-                        }
-                    }
-                    .buttonStyle(on ? PartyButton.gold : PartyButton.secondary)
-                }
-            }
-        }
-    }
-}
-
 struct TeamsEditor: View {
     @EnvironmentObject var store: GameStore
     @State private var a = ""
     @State private var b = ""
     var body: some View {
         GamePanel(accent: CT.teamA.first!) {
-            SectionLabel(text: "Teams + Captains", icon: "person.3.fill", color: CT.magenta)
+            SectionLabel(text: "Teams", icon: "person.3.fill", color: CT.magenta)
             GameField(placeholder: "Team A name", text: $a).onAppear { a = store.teamName(.A) }
             GameField(placeholder: "Team B name", text: $b).onAppear { b = store.teamName(.B) }
-            HStack(spacing: 12) {
-                Button("SAVE NAMES") { store.send(.setTeamName(.A, a)); store.send(.setTeamName(.B, b)) }
-                    .buttonStyle(PartyButton.secondary)
-                Button { store.randomizeCaptainsAndTeams() } label: { Label("RANDOMIZE", systemImage: "shuffle") }
-                    .buttonStyle(PartyButton.primary)
-            }
+            Button("SAVE NAMES") { store.send(.setTeamName(.A, a)); store.send(.setTeamName(.B, b)) }
+                .buttonStyle(PartyButton.secondary)
+            Text("Tap A / B to move a player. Need at least 2 players on each team.")
+                .font(CT.font(12, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
             TeamsList(theme: GameTheme.all.first { $0.id == store.state.config.themeId } ?? GameTheme.all[0], editable: true)
         }
     }
@@ -803,7 +715,6 @@ struct StartCard: View {
     var body: some View {
         let ready = store.state.players.filter { $0.team == .A }.count >= 2
             && store.state.players.filter { $0.team == .B }.count >= 2
-            && store.state.captainIds[.A] != nil && store.state.captainIds[.B] != nil
         GamePanel(accent: CT.green) {
             HStack(spacing: 8) {
                 Image(systemName: categoryIcons[store.state.config.category] ?? "square.grid.2x2.fill").foregroundStyle(CT.green)
@@ -821,7 +732,7 @@ struct StartCard: View {
                 if newValue { withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true } }
             }
             if !ready {
-                Text("Randomize captains first. Need 2 players per team.")
+                Text("Need at least 2 players on each team to start.")
                     .font(CT.font(12, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
             }
         }
@@ -861,25 +772,18 @@ struct PlayerRow: View {
     @State private var draft = ""
     var body: some View {
         VStack(spacing: 8) {
-            let captain = store.isCaptain(player)
             if editable {
-                HStack {
-                    if captain { Image(systemName: "crown.fill").foregroundStyle(CT.gold) }
-                    TextField("Name", text: $draft)
-                        .font(CT.font(14, .bold)).foregroundColor(CT.ink).colorScheme(.light)
-                        .padding(8).background(RoundedRectangle(cornerRadius: 10).fill(.white)).onAppear { draft = player.name }
-                }
+                TextField("Name", text: $draft)
+                    .font(CT.font(14, .bold)).foregroundColor(CT.ink).colorScheme(.light)
+                    .padding(8).background(RoundedRectangle(cornerRadius: 10).fill(.white)).onAppear { draft = player.name }
                 HStack(spacing: 6) {
                     Button("A") { store.send(.setPlayerTeam(player.id, .A)) }.buttonStyle(MiniButton(color: CT.teamA.first!))
                     Button("B") { store.send(.setPlayerTeam(player.id, .B)) }.buttonStyle(MiniButton(color: CT.teamB.first!))
                     Button("SAVE") { store.send(.renamePlayer(player.id, draft)) }.buttonStyle(MiniButton(color: .white, fg: CT.ink))
                 }
             } else {
-                HStack {
-                    if captain { Image(systemName: "crown.fill").foregroundStyle(CT.gold) }
-                    Text(player.name + (store.activePlayerId == player.id ? " • YOU" : ""))
-                        .font(CT.font(15, .black)).foregroundStyle(.white)
-                }
+                Text(player.name + (store.activePlayerId == player.id ? " • YOU" : ""))
+                    .font(CT.font(15, .black)).foregroundStyle(.white)
             }
         }
         .padding(10)
