@@ -1,6 +1,6 @@
 import Foundation
 
-enum GameAction: Codable { case addPlayer(String), upsertPlayer(Player), renamePlayer(String, String), setPlayerTeam(String, TeamId), setLobbyPlayers([Player]), setCaptains([TeamId: String]), removePlayer(String), assignTeams, setTeamName(TeamId, String), voteTheme(String, String), setTeamCategoryVote(TeamId, String), setTheme(String), setCategory(String), setRoundsToWin(Int), setMaxStatics(Int), startRound(WordEntry), allReady, clueGiven(String), receiverPass(TeamId), receiverGuess(TeamId, String), nextRound(WordEntry), reset }
+enum GameAction: Codable { case addPlayer(String), upsertPlayer(Player), renamePlayer(String, String), setPlayerTeam(String, TeamId), setLobbyPlayers([Player]), removePlayer(String), assignTeams, setTeamName(TeamId, String), setTheme(String), setCategory(String), setRoundsToWin(Int), setMaxStatics(Int), startRound(WordEntry), allReady, clueGiven(String), receiverPass(TeamId), receiverGuess(TeamId, String), nextRound(WordEntry), reset }
 
 enum GuessMatcher {
     static func normalize(_ input: String) -> String {
@@ -41,16 +41,10 @@ struct GameEngine {
         case .renamePlayer(let id, let name): if let i = state.players.firstIndex(where: { $0.id == id }) { state.players[i].name = name }
         case .setPlayerTeam(let id, let team): if let i = state.players.firstIndex(where: { $0.id == id }) { state.players[i].team = team }
         case .setLobbyPlayers(let players): state.players = players
-        case .setCaptains(let captains): state.captainIds = captains
-        case .removePlayer(let id): state.players.removeAll { $0.id == id }; state.themeVotes.removeValue(forKey: id); state.captainIds = state.captainIds.filter { $0.value != id }
+        case .removePlayer(let id): state.players.removeAll { $0.id == id }
         case .assignTeams: for i in state.players.indices { state.players[i].team = i % 2 == 0 ? .A : .B }
         case .setTeamName(let team, let name): state.config.teamNames[team] = name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Team \(team.rawValue)" : name
-        case .voteTheme(let playerId, let themeId):
-            state.themeVotes[playerId] = themeId
-            let counts = Dictionary(grouping: state.themeVotes.values, by: { $0 }).mapValues(\.count)
-            if let winner = counts.max(by: { $0.value == $1.value ? $0.key > $1.key : $0.value < $1.value })?.key { state.config.themeId = winner }
         case .setTheme(let themeId): state.config.themeId = themeId
-        case .setTeamCategoryVote(let team, let category): state.teamCategoryVotes[team] = category
         case .setCategory(let category): state.config.category = category
         case .setRoundsToWin(let rounds): state.config.roundsToWin = min(max(rounds, 2), 4)
         case .setMaxStatics(let statics): state.config.maxStatics = min(max(statics, 2), 3)
@@ -70,8 +64,9 @@ struct GameEngine {
     private static func start(_ state: inout GameState, _ word: WordEntry) {
         let a = state.players.filter{$0.team == .A}, b = state.players.filter{$0.team == .B}; guard a.count >= 2 && b.count >= 2 else { return }
         state.roundNumber += 1; state.status = .inRound; state.usedSignals.insert(word.signal)
-        let ar = state.captainIds[.A].flatMap { id in a.first(where: { $0.id == id })?.id } ?? a[(state.roundNumber - 1) % a.count].id
-        let br = state.captainIds[.B].flatMap { id in b.first(where: { $0.id == id })?.id } ?? b[(state.roundNumber - 1) % b.count].id
+        // The only randomized role: who guesses (doesn't know the word) on each team, re-rolled every round.
+        let ar = a.randomElement()!.id
+        let br = b.randomElement()!.id
         let oldAScore = state.teams[.A]?.score ?? 0, oldBScore = state.teams[.B]?.score ?? 0
         state.teams[.A] = TeamState(id: .A, receiverId: ar, transmitterOrder: a.filter{$0.id != ar}.map(\.id), score: oldAScore)
         state.teams[.B] = TeamState(id: .B, receiverId: br, transmitterOrder: b.filter{$0.id != br}.map(\.id), score: oldBScore)

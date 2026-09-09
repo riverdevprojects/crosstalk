@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - Themes (unchanged data, refreshed party palette)
+
 struct GameTheme: Identifiable, Equatable {
     let id: String, name: String, symbol: String, receiver: String, transmitter: String, teamAIcon: String, teamBIcon: String
     let aColors: [Color], bColors: [Color]
@@ -12,113 +14,1063 @@ struct GameTheme: Identifiable, Equatable {
 }
 
 let categories = ["Everything", "Animals", "Food", "Places", "Objects"]
+let categoryIcons: [String: String] = ["Everything": "square.grid.2x2.fill", "Animals": "pawprint.fill", "Food": "fork.knife", "Places": "map.fill", "Objects": "cube.fill"]
+
+// MARK: - Party design system
+
+enum CT {
+    // Background
+    static let bgTop = Color(red: 0.42, green: 0.16, blue: 0.86)     // deep purple
+    static let bgMid = Color(red: 0.78, green: 0.17, blue: 0.74)     // magenta
+    static let bgBot = Color(red: 1.00, green: 0.38, blue: 0.66)     // pink
+
+    // Panel + ink
+    static let panel = Color.white
+    static let ink = Color(red: 0.20, green: 0.12, blue: 0.34)       // dark purple ink
+    static let inkSoft = Color(red: 0.42, green: 0.36, blue: 0.55)
+
+    // Accents
+    static let purple = Color(red: 0.55, green: 0.24, blue: 0.95)
+    static let magenta = Color(red: 0.90, green: 0.20, blue: 0.66)
+    static let pink = Color(red: 1.00, green: 0.40, blue: 0.66)
+    static let gold = Color(red: 1.00, green: 0.78, blue: 0.20)
+    static let orange = Color(red: 1.00, green: 0.52, blue: 0.20)
+    static let green = Color(red: 0.28, green: 0.82, blue: 0.45)
+    static let cyan = Color(red: 0.25, green: 0.78, blue: 0.95)
+
+    // Team identity
+    static let teamA: [Color] = [Color(red: 0.24, green: 0.62, blue: 1.0), Color(red: 0.18, green: 0.82, blue: 0.92)]
+    static let teamB: [Color] = [Color(red: 1.0, green: 0.36, blue: 0.62), Color(red: 1.0, green: 0.52, blue: 0.24)]
+    static func team(_ t: TeamId) -> [Color] { t == .A ? teamA : teamB }
+
+    static func font(_ size: CGFloat, _ weight: Font.Weight = .heavy) -> Font { .system(size: size, weight: weight, design: .rounded) }
+}
+
+// MARK: - Root
+
+enum FlowScreen { case welcome, entry, hostSetup, joinCode }
 
 struct ContentView: View {
     @EnvironmentObject var store: GameStore
+    @State private var screen: FlowScreen = .welcome
+    @State private var playerName = ""
     var theme: GameTheme { GameTheme.all.first { $0.id == store.state.config.themeId } ?? GameTheme.all[0] }
+
     var body: some View {
-        NavigationStack {
-            ZStack { TeamBackdrop(team: store.activePlayer?.team, theme: theme); ScrollView { screen.padding(20) } }
-                .foregroundStyle(.white).navigationTitle("Crosstalk")
+        ZStack {
+            PartyBackground()
+            content
+        }
+        .tint(CT.magenta)
+    }
+
+    @ViewBuilder var content: some View {
+        switch store.state.status {
+        case .inRound: PartyScroll { RoundView(theme: theme) }
+        case .matchOver: PartyScroll { MatchOverView() }
+        case .lobby: lobbyFlow
         }
     }
-    @ViewBuilder var screen: some View { switch store.state.status { case .lobby: LobbyView(theme: theme); case .matchOver: MatchOverView(); case .inRound: RoundView(theme: theme) } }
+
+    @ViewBuilder var lobbyFlow: some View {
+        switch screen {
+        case .welcome:
+            WelcomeView { withAnimation(.easeInOut) { screen = .entry } }
+                .transition(.opacity)
+        case .entry:
+            EntryView(
+                name: $playerName,
+                onHost: { store.hostGame(name: playerName); withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) { screen = .hostSetup } },
+                onJoin: { withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) { screen = .joinCode } }
+            )
+            .transition(.move(edge: .trailing).combined(with: .opacity))
+        case .hostSetup:
+            PartyScroll { HostLobby(theme: theme, onLeave: leave) }
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+        case .joinCode:
+            if !store.network.connectedNames.isEmpty {
+                PartyScroll { PlayerLobby(theme: theme, onLeave: leave) }
+                    .transition(.opacity)
+            } else {
+                JoinCodeView(
+                    name: $playerName,
+                    onJoin: { code in store.joinGame(name: playerName, code: code) },
+                    onBack: leave
+                )
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
+        }
+    }
+
+    func leave() {
+        store.leaveRoom()
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) { screen = .entry }
+    }
 }
 
-struct TeamBackdrop: View {
-    let team: TeamId?; let theme: GameTheme
-    var body: some View { let colors = team == .A ? theme.aColors : team == .B ? theme.bColors : [theme.aColors[0], theme.bColors[0], .black]; ZStack { LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing).ignoresSafeArea(); Circle().fill(.white.opacity(0.10)).frame(width: 280, height: 280).blur(radius: 20).offset(x: -120, y: -260); Circle().fill(.black.opacity(0.22)).frame(width: 360, height: 360).blur(radius: 30).offset(x: 160, y: 260); Image(systemName: team == .A ? theme.teamAIcon : team == .B ? theme.teamBIcon : theme.symbol).font(.system(size: 230, weight: .black)).opacity(0.16).offset(x: 78, y: -150) } }
+/// Standard scrollable party page.
+struct PartyScroll<Content: View>: View {
+    @ViewBuilder var content: Content
+    var body: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 20) { content }
+                .padding(.horizontal, 18)
+                .padding(.bottom, 32)
+                .frame(maxWidth: .infinity)
+        }
+    }
 }
 
-struct Card<Content: View>: View { @ViewBuilder var content: Content; var body: some View { VStack(spacing: 16) { content }.padding(20).frame(maxWidth: .infinity).background(LinearGradient(colors: [.white.opacity(0.20), .black.opacity(0.30)], startPoint: .topLeading, endPoint: .bottomTrailing)).overlay(RoundedRectangle(cornerRadius: 28).stroke(.white.opacity(0.22), lineWidth: 1)).clipShape(RoundedRectangle(cornerRadius: 28)).shadow(color: .black.opacity(0.35), radius: 18, y: 8) } }
-struct BigButton: ButtonStyle { func makeBody(configuration: Configuration) -> some View { configuration.label.font(.title3.bold()).padding().frame(maxWidth: .infinity).background(configuration.isPressed ? .white.opacity(0.24) : .white.opacity(0.14)).overlay(RoundedRectangle(cornerRadius: 18).stroke(.white.opacity(0.22))).clipShape(RoundedRectangle(cornerRadius: 18)) } }
-struct TeamBadge: View { @EnvironmentObject var store: GameStore; let team: TeamId; var body: some View { Text(store.teamName(team).uppercased()).font(.title.bold()).padding(.horizontal, 18).padding(.vertical, 10).background(team == .A ? .blue : .red).clipShape(Capsule()) } }
+// MARK: - Animated background
 
-struct LobbyView: View {
+struct PartyBackground: View {
+    @State private var float = false
+    var body: some View {
+        ZStack {
+            LinearGradient(colors: [CT.bgTop, CT.bgMid, CT.bgBot], startPoint: .topLeading, endPoint: .bottomTrailing)
+                .ignoresSafeArea()
+            // soft glow blobs
+            Circle().fill(Color.white.opacity(0.16)).frame(width: 320).blur(radius: 30)
+                .offset(x: -130, y: float ? -320 : -290)
+            Circle().fill(CT.gold.opacity(0.22)).frame(width: 240).blur(radius: 26)
+                .offset(x: 150, y: float ? 300 : 340)
+            Circle().fill(CT.cyan.opacity(0.18)).frame(width: 200).blur(radius: 24)
+                .offset(x: 140, y: float ? -180 : -150)
+            // decorative party shapes
+            decor("music.note", size: 40, x: -140, y: -120, rot: -18, opacity: 0.18)
+            decor("star.fill", size: 30, x: 150, y: -60, rot: 12, opacity: 0.22)
+            decor("sparkles", size: 46, x: -120, y: 260, rot: 0, opacity: 0.20)
+            decor("music.note", size: 28, x: 130, y: 150, rot: 20, opacity: 0.16)
+            decor("circle.fill", size: 16, x: -60, y: -300, rot: 0, opacity: 0.22)
+            decor("star.fill", size: 18, x: -160, y: 60, rot: -10, opacity: 0.18)
+        }
+        .onAppear { withAnimation(.easeInOut(duration: 6).repeatForever(autoreverses: true)) { float = true } }
+    }
+    func decor(_ symbol: String, size: CGFloat, x: CGFloat, y: CGFloat, rot: Double, opacity: Double) -> some View {
+        Image(systemName: symbol)
+            .font(.system(size: size, weight: .black))
+            .foregroundStyle(.white.opacity(opacity))
+            .rotationEffect(.degrees(rot))
+            .offset(x: x, y: float ? y - 14 : y + 14)
+    }
+}
+
+// MARK: - Building blocks
+
+/// Opaque white game panel with a colored offset shadow and gentle entrance.
+struct GamePanel<Content: View>: View {
+    var accent: Color = CT.purple
+    @ViewBuilder var content: Content
+    @State private var appeared = false
+    var body: some View {
+        VStack(spacing: 16) { content }
+            .frame(maxWidth: .infinity)
+            .padding(20)
+            .background(
+                RoundedRectangle(cornerRadius: 30, style: .continuous)
+                    .fill(CT.panel)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 30, style: .continuous)
+                    .stroke(accent.opacity(0.25), lineWidth: 2)
+            )
+            .shadow(color: accent.opacity(0.45), radius: 0, x: 0, y: 8)
+            .shadow(color: Color.black.opacity(0.20), radius: 16, x: 0, y: 10)
+            .foregroundStyle(CT.ink)
+            .scaleEffect(appeared ? 1 : 0.94)
+            .opacity(appeared ? 1 : 0)
+            .onAppear { withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { appeared = true } }
+    }
+}
+
+/// Uppercase section header used inside panels.
+struct SectionLabel: View {
+    let text: String
+    var icon: String? = nil
+    var color: Color = CT.magenta
+    var body: some View {
+        HStack(spacing: 8) {
+            if let icon { Image(systemName: icon) }
+            Text(text.uppercased())
+        }
+        .font(CT.font(15, .black))
+        .foregroundStyle(color)
+        .kerning(1)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// Chunky game button with depth + press animation.
+struct PartyButton: ButtonStyle {
+    var fill: [Color]
+    var fg: Color = .white
+    var big: Bool = false
+    @Environment(\.isEnabled) private var enabled
+    func makeBody(configuration: Configuration) -> some View {
+        let pressed = configuration.isPressed
+        configuration.label
+            .font(CT.font(big ? 24 : 18, .heavy))
+            .foregroundColor(fg)
+            .kerning(0.5)
+            .padding(.vertical, big ? 20 : 15)
+            .padding(.horizontal, 22)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(LinearGradient(colors: fill, startPoint: .top, endPoint: .bottom))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .stroke(.white.opacity(0.35), lineWidth: 1.5)
+            )
+            .shadow(color: (fill.last ?? .black).opacity(0.55), radius: pressed ? 2 : 9, x: 0, y: pressed ? 1 : 6)
+            .offset(y: pressed ? 3 : 0)
+            .scaleEffect(pressed ? 0.97 : 1)
+            .opacity(enabled ? 1 : 0.45)
+            .grayscale(enabled ? 0 : 0.4)
+            .animation(.spring(response: 0.25, dampingFraction: 0.6), value: pressed)
+    }
+}
+
+extension PartyButton {
+    static var primary: PartyButton { PartyButton(fill: [CT.magenta, CT.pink]) }
+    static var go: PartyButton { PartyButton(fill: [CT.green, Color(red: 0.16, green: 0.68, blue: 0.42)]) }
+    static var gold: PartyButton { PartyButton(fill: [CT.gold, CT.orange], fg: CT.ink) }
+    static var secondary: PartyButton { PartyButton(fill: [Color(white: 0.97), Color(white: 0.90)], fg: CT.ink) }
+    static func team(_ t: TeamId) -> PartyButton { PartyButton(fill: CT.team(t)) }
+}
+
+/// Big rounded input field.
+struct GameField: View {
+    let placeholder: String
+    @Binding var text: String
+    var big: Bool = false
+    var body: some View {
+        TextField("", text: $text, prompt: Text(placeholder).foregroundColor(CT.inkSoft.opacity(0.7)))
+            .font(CT.font(big ? 30 : 20, .bold))
+            .foregroundColor(CT.ink)
+            .tint(CT.magenta)
+            .colorScheme(.light)
+            .multilineTextAlignment(.leading)
+            .padding(.vertical, 14)
+            .padding(.horizontal, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(Color(white: 0.96))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(CT.purple.opacity(0.25), lineWidth: 2)
+            )
+    }
+}
+
+/// Connection status indicator.
+struct StatusPill: View {
+    let connected: Bool
+    let text: String
+    var body: some View {
+        HStack(spacing: 8) {
+            Circle().fill(connected ? CT.green : Color(red: 0.85, green: 0.30, blue: 0.42))
+                .frame(width: 12, height: 12)
+                .shadow(color: (connected ? CT.green : .red).opacity(0.7), radius: 4)
+            Text(text.uppercased())
+                .font(CT.font(13, .bold))
+                .foregroundStyle(CT.inkSoft)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+        }
+        .padding(.vertical, 8).padding(.horizontal, 14)
+        .background(Capsule().fill(connected ? CT.green.opacity(0.14) : Color(red: 0.98, green: 0.90, blue: 0.92)))
+        .overlay(Capsule().stroke((connected ? CT.green : Color(red: 0.85, green: 0.30, blue: 0.42)).opacity(0.4), lineWidth: 1.5))
+        .animation(.spring(response: 0.35, dampingFraction: 0.7), value: connected)
+    }
+}
+
+/// Tactile [-] N [+] control.
+struct GameStepper: View {
+    let label: String
+    let icon: String
+    let display: String
+    var accent: Color = CT.purple
+    let canDown: Bool, canUp: Bool
+    let onDown: () -> Void, onUp: () -> Void
+    var body: some View {
+        VStack(spacing: 10) {
+            SectionLabel(text: label, icon: icon, color: accent)
+            HStack(spacing: 14) {
+                roundBtn("minus", enabled: canDown, action: onDown)
+                Text(display)
+                    .font(CT.font(30, .black))
+                    .foregroundStyle(CT.ink)
+                    .frame(maxWidth: .infinity)
+                    .contentTransition(.numericText())
+                roundBtn("plus", enabled: canUp, action: onUp)
+            }
+        }
+    }
+    func roundBtn(_ symbol: String, enabled: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { action() }
+        } label: {
+            Image(systemName: symbol).font(CT.font(20, .black))
+        }
+        .buttonStyle(PartyButton(fill: enabled ? [accent, accent.opacity(0.8)] : [Color(white: 0.85)], fg: .white))
+        .frame(width: 56)
+        .disabled(!enabled)
+    }
+}
+
+/// Team badge pill.
+struct TeamBadge: View {
     @EnvironmentObject var store: GameStore
-    let theme: GameTheme
-    @State private var name = ""
-    var body: some View { VStack(spacing: 18) {
-        if store.isHost { HostLobby(theme: theme, name: $name) } else { PlayerLobby(theme: theme, name: $name) }
-    } }
+    let team: TeamId
+    var body: some View {
+        Text(store.teamName(team).uppercased())
+            .font(CT.font(22, .black))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 20).padding(.vertical, 10)
+            .background(Capsule().fill(LinearGradient(colors: CT.team(team), startPoint: .top, endPoint: .bottom)))
+            .shadow(color: CT.team(team).last!.opacity(0.5), radius: 6, y: 3)
+    }
 }
+
+// MARK: - Logo header
+
+struct LogoHeader: View {
+    var subtitle: String = "THE ULTIMATE PARTY GAME"
+    @State private var wiggle = false
+    var body: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle().fill(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom))
+                        .frame(width: 56, height: 56)
+                        .shadow(color: CT.orange.opacity(0.6), radius: 8, y: 4)
+                    Image(systemName: "antenna.radiowaves.left.and.right")
+                        .font(.system(size: 26, weight: .black))
+                        .foregroundStyle(.white)
+                }
+                .rotationEffect(.degrees(wiggle ? -6 : 6))
+                Text("CROSSTALK")
+                    .font(CT.font(40, .black))
+                    .foregroundStyle(.white)
+                    .kerning(1)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    .shadow(color: CT.bgTop.opacity(0.6), radius: 0, x: 0, y: 3)
+                    .shadow(color: .black.opacity(0.25), radius: 8, y: 4)
+            }
+            Text(subtitle)
+                .font(CT.font(14, .bold))
+                .foregroundStyle(.white.opacity(0.92))
+                .kerning(2)
+                .padding(.vertical, 5).padding(.horizontal, 14)
+                .background(Capsule().fill(.white.opacity(0.18)))
+        }
+        .padding(.top, 8)
+        .onAppear { withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) { wiggle = true } }
+    }
+}
+
+// MARK: - Flow: welcome / entry / join
+
+/// Header used on the flow pages, with an optional back/leave chip.
+struct FlowHeader: View {
+    var subtitle: String = "THE ULTIMATE PARTY GAME"
+    var backLabel: String = "BACK"
+    var onBack: (() -> Void)? = nil
+    var body: some View {
+        VStack(spacing: 10) {
+            if let onBack {
+                HStack {
+                    Button { onBack() } label: {
+                        Label(backLabel, systemImage: "chevron.left")
+                            .font(CT.font(13, .black)).foregroundStyle(.white)
+                            .padding(.vertical, 8).padding(.horizontal, 14)
+                            .background(Capsule().fill(.white.opacity(0.20)))
+                            .overlay(Capsule().stroke(.white.opacity(0.3), lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                    Spacer()
+                }
+            }
+            LogoHeader(subtitle: subtitle)
+        }
+    }
+}
+
+/// Animated splash / loading screen shown on launch.
+struct WelcomeView: View {
+    let onDone: () -> Void
+    @State private var progress: CGFloat = 0
+    @State private var bounce = false
+    var body: some View {
+        VStack(spacing: 34) {
+            Spacer()
+            LogoHeader(subtitle: "GUESS • COMPETE • WIN")
+                .scaleEffect(bounce ? 1.03 : 0.97)
+            // playful loading bar
+            VStack(spacing: 14) {
+                ZStack(alignment: .leading) {
+                    Capsule().fill(.white.opacity(0.22)).frame(height: 16)
+                    GeometryReader { geo in
+                        Capsule()
+                            .fill(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .leading, endPoint: .trailing))
+                            .frame(width: max(16, geo.size.width * progress), height: 16)
+                            .shadow(color: CT.orange.opacity(0.6), radius: 6)
+                    }
+                    .frame(height: 16)
+                }
+                .frame(height: 16)
+                .frame(maxWidth: 240)
+                Text("LOADING…")
+                    .font(CT.font(15, .black)).foregroundStyle(.white.opacity(0.9)).kerning(3)
+            }
+            Spacer()
+            Spacer()
+        }
+        .padding(.horizontal, 24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .task {
+            withAnimation(.easeInOut(duration: 1.6)) { progress = 1 }
+            withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { bounce = true }
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            onDone()
+        }
+    }
+}
+
+/// Name + Host/Join chooser. Leads to a dedicated page for each mode.
+struct EntryView: View {
+    @Binding var name: String
+    let onHost: () -> Void
+    let onJoin: () -> Void
+    @State private var mode = 0 // 0 = Host, 1 = Join
+    var body: some View {
+        PartyScroll {
+            LogoHeader()
+            GamePanel(accent: CT.magenta) {
+                SectionLabel(text: "Your Name", icon: "person.fill", color: CT.magenta)
+                GameField(placeholder: "Enter your name…", text: $name)
+
+                SectionLabel(text: "Choose Mode", icon: "gamecontroller.fill", color: CT.magenta)
+                ModeSelector(mode: $mode)
+
+                Text(mode == 0 ? "Create a room and get a code your friends type in." : "Type the host's room code to jump into their game.")
+                    .font(CT.font(14, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+
+                Button {
+                    guard !name.trimmed.isEmpty else { return }
+                    if mode == 0 { onHost() } else { onJoin() }
+                } label: {
+                    Label(mode == 0 ? "CREATE ROOM" : "ENTER A CODE", systemImage: "arrow.right")
+                }
+                .buttonStyle(mode == 0 ? PartyButton.primary : PartyButton(fill: [CT.purple, CT.magenta]))
+                .disabled(name.trimmed.isEmpty)
+            }
+        }
+    }
+}
+
+/// Room-code entry page for joiners; shows a searching state after submit.
+struct JoinCodeView: View {
+    @EnvironmentObject var store: GameStore
+    @Binding var name: String
+    let onJoin: (String) -> Void
+    let onBack: () -> Void
+    @State private var code = ""
+    @State private var submitted = false
+    @State private var spin = false
+    var body: some View {
+        PartyScroll {
+            FlowHeader(subtitle: "JOIN A ROOM", onBack: { submitted = false; onBack() })
+            GamePanel(accent: CT.purple) {
+                if submitted {
+                    Image(systemName: "dot.radiowaves.left.and.right")
+                        .font(.system(size: 52, weight: .black))
+                        .foregroundStyle(LinearGradient(colors: [CT.purple, CT.magenta], startPoint: .top, endPoint: .bottom))
+                        .rotationEffect(.degrees(spin ? 8 : -8))
+                    Text("SEARCHING FOR \(code)").font(CT.font(22, .black)).foregroundStyle(CT.ink)
+                    Text(store.network.statusText).font(CT.font(14, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+                    Text("Make sure the host is nearby and their screen shows this code.")
+                        .font(CT.font(13, .medium)).foregroundStyle(CT.inkSoft.opacity(0.8)).multilineTextAlignment(.center)
+                    Button("CANCEL") { submitted = false; onBack() }
+                        .buttonStyle(PartyButton.secondary)
+                } else {
+                    SectionLabel(text: "Room Code", icon: "number", color: CT.purple)
+                    GameField(placeholder: "ABCD", text: $code, big: true)
+                        .textInputAutocapitalization(.characters)
+                        .autocorrectionDisabled()
+                        .onChange(of: code) { code = String($0.uppercased().filter { $0.isLetter || $0.isNumber }.prefix(4)) }
+                    Text("Ask the host for their 4-character room code.")
+                        .font(CT.font(14, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+                    Button {
+                        let c = code.trimmed.uppercased()
+                        guard !c.isEmpty else { return }
+                        submitted = true
+                        onJoin(c)
+                    } label: {
+                        Label("JOIN GAME", systemImage: "arrow.right.circle.fill")
+                    }
+                    .buttonStyle(PartyButton.primary)
+                    .disabled(code.trimmed.isEmpty)
+                }
+            }
+        }
+        .onAppear { withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) { spin = true } }
+    }
+}
+
+// MARK: - Lobby pages
 
 struct HostLobby: View {
     @EnvironmentObject var store: GameStore
     let theme: GameTheme
-    @Binding var name: String
-    var body: some View { VStack(spacing: 18) {
-        Card { Label("HOST CONTROL CENTER", systemImage: "crown.fill").font(.title.bold()); Text("You connect the room, randomize captains/teams, and start. Captains choose the category.").multilineTextAlignment(.center) }
-        ConnectionCard(name: $name)
-        HostSettings(theme: theme)
-        CaptainCategoryCard(theme: theme)
-        TeamsEditor()
-        StartCard()
-    } }
+    var onLeave: () -> Void = {}
+    var body: some View {
+        VStack(spacing: 20) {
+            FlowHeader(subtitle: "HOST CONTROL", backLabel: "LEAVE", onBack: onLeave)
+            RoomCodeCard()
+            GamePanel(accent: CT.gold) {
+                SectionLabel(text: "Host Control Center", icon: "crown.fill", color: CT.orange)
+                Text("Pick the theme, category and settings, sort the teams, then start. Each round a random player on each team becomes the one who has to guess.")
+                    .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+            }
+            HostSettings(theme: theme)
+            TeamsEditor()
+            StartCard()
+        }
+    }
 }
 
 struct PlayerLobby: View {
     @EnvironmentObject var store: GameStore
     let theme: GameTheme
-    @Binding var name: String
-    var body: some View { VStack(spacing: 18) {
-        Card { Image(systemName: theme.symbol).font(.system(size: 54)); Text(theme.name).font(.largeTitle.bold()); Text("Vote for a theme, edit your name, then wait for the host.").multilineTextAlignment(.center) }
-        ConnectionCard(name: $name)
-        MyNameCard(theme: theme)
-        CaptainCategoryCard(theme: theme)
-        ThemeVoteCard(selected: theme)
-        TeamsList(theme: theme)
-    } }
-}
-
-struct ConnectionCard: View { @EnvironmentObject var store: GameStore; @Binding var name: String; var body: some View { Card { TextField("Your name", text: $name).textFieldStyle(.roundedBorder).foregroundColor(.black).tint(.indigo).colorScheme(.light).font(.title3); HStack { Button("Host") { guard !name.trimmed.isEmpty else { return }; store.hostGame(name: name) }.buttonStyle(.borderedProminent); Button("Join") { guard !name.trimmed.isEmpty else { return }; store.joinGame(name: name) }.buttonStyle(.bordered) }.font(.title2); Text(store.network.statusText).font(.caption) } } }
-
-struct MyNameCard: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; @State private var draft = ""; var body: some View { if let p = store.activePlayer { Card { TeamBadge(team: p.team); Text(store.isCaptain(p) ? "You are the \(theme.receiver) / Team Captain" : "You are a \(theme.transmitter)").font(.headline); TextField("Change your name", text: $draft).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { draft = p.name }; Button("Save Name") { store.send(.renamePlayer(p.id, draft)) }.buttonStyle(.borderedProminent).disabled(draft.trimmed.isEmpty) } } } }
-
-struct HostSettings: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; var body: some View { Card { Text("Host Setup").font(.title2.bold()); Picker("Theme", selection: Binding(get: { store.state.config.themeId }, set: { store.send(.setTheme($0)) })) { ForEach(GameTheme.all) { Text($0.name).tag($0.id) } }.pickerStyle(.menu); ThemeVoteSummary(); Stepper("Best of \(store.state.config.roundsToWin * 2 - 1)", value: Binding(get: { store.state.config.roundsToWin }, set: { store.send(.setRoundsToWin($0)) }), in: 2...4); Stepper("Statics: \(store.state.config.maxStatics)", value: Binding(get: { store.state.config.maxStatics }, set: { store.send(.setMaxStatics($0)) }), in: 2...3) } } }
-struct ThemeVoteSummary: View { @EnvironmentObject var store: GameStore; var body: some View { VStack(alignment: .leading) { Text("Theme votes").font(.headline); ForEach(GameTheme.all) { t in Text("\(t.name): \(store.state.themeVotes.values.filter { $0 == t.id }.count)").font(.caption) } }.frame(maxWidth: .infinity, alignment: .leading) } }
-
-struct CaptainCategoryCard: View {
-    @EnvironmentObject var store: GameStore
-    let theme: GameTheme
+    var onLeave: () -> Void = {}
     var body: some View {
-        let captainTeam = store.captainTeam(for: store.activePlayerId)
-        Card {
-            Text("Captain Category Vote").font(.title2.bold())
-            if let captainTeam {
-                Text("You are the \(theme.receiver) for \(store.teamName(captainTeam)). Pick your team's category.").multilineTextAlignment(.center)
-                Picker("Category", selection: Binding(get: { store.state.teamCategoryVotes[captainTeam] ?? "Everything" }, set: { store.send(.setTeamCategoryVote(captainTeam, $0)) })) {
-                    ForEach(categories, id: \.self) { Text($0).tag($0) }
-                }.pickerStyle(.wheel).frame(height: 120)
-            } else {
-                Text("Only the two \(theme.receiver)s / team captains choose categories.").multilineTextAlignment(.center).opacity(0.85)
+        VStack(spacing: 20) {
+            FlowHeader(subtitle: "IN THE LOBBY", backLabel: "LEAVE", onBack: onLeave)
+            GamePanel(accent: CT.purple) {
+                Image(systemName: theme.symbol)
+                    .font(.system(size: 46, weight: .black))
+                    .foregroundStyle(LinearGradient(colors: [CT.purple, CT.magenta], startPoint: .top, endPoint: .bottom))
+                Text(theme.name.uppercased()).font(CT.font(30, .black)).foregroundStyle(CT.ink)
+                Text("Set your name and wait for the host to start. Each round, one random player per team has to guess.")
+                    .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+                StatusPill(connected: !store.network.connectedNames.isEmpty, text: store.network.connectedNames.isEmpty ? "Connecting…" : "Connected")
             }
-            HStack {
-                Text("\(store.teamName(.A)): \(store.state.teamCategoryVotes[.A] ?? "—")")
-                Spacer()
-                Text("\(store.teamName(.B)): \(store.state.teamCategoryVotes[.B] ?? "—")")
-            }.font(.caption.bold())
-            Text("If captains pick different categories, the app randomly chooses one 50/50 when the match starts.").font(.caption).opacity(0.75).multilineTextAlignment(.center)
+            MyNameCard(theme: theme)
+            TeamsList(theme: theme)
         }
     }
 }
 
-struct ThemeVoteCard: View { @EnvironmentObject var store: GameStore; let selected: GameTheme; var body: some View { let myVote = store.activePlayerId.flatMap { store.state.themeVotes[$0] } ?? store.state.config.themeId; Card { Text("Vote Theme").font(.title2.bold()); Text("Your vote changes the room theme immediately.").font(.caption).opacity(0.8); ForEach(GameTheme.all) { t in Button { if let id = store.activePlayerId { store.send(.voteTheme(id, t.id)) } } label: { HStack { Label(t.name, systemImage: t.symbol); Spacer(); if myVote == t.id { Image(systemName: "checkmark.circle.fill").foregroundStyle(.green).font(.title2) } } }.buttonStyle(BigButton()) } } } }
+/// Big shareable room code for the host page.
+struct RoomCodeCard: View {
+    @EnvironmentObject var store: GameStore
+    var count: Int { store.network.connectedNames.count }
+    var body: some View {
+        GamePanel(accent: CT.gold) {
+            SectionLabel(text: "Room Code", icon: "number", color: CT.orange)
+            Text(store.network.roomCode.isEmpty ? "----" : store.network.roomCode)
+                .font(CT.font(56, .black))
+                .kerning(10)
+                .foregroundStyle(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom))
+                .lineLimit(1).minimumScaleFactor(0.5)
+                .shadow(color: CT.orange.opacity(0.3), radius: 6, y: 3)
+            Text("Friends pick JOIN and type this code to enter your room.")
+                .font(CT.font(13, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+            StatusPill(connected: count > 0, text: count == 0 ? "Waiting for players" : "\(count) connected")
+        }
+    }
+}
 
-struct TeamsEditor: View { @EnvironmentObject var store: GameStore; @State private var a = ""; @State private var b = ""; var body: some View { Card { Text("Teams + Captains").font(.title2.bold()); TextField("Team A name", text: $a).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { a = store.teamName(.A) }; TextField("Team B name", text: $b).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { b = store.teamName(.B) }; HStack { Button("Save Names") { store.send(.setTeamName(.A, a)); store.send(.setTeamName(.B, b)) }.buttonStyle(.borderedProminent); Button("Random Captains + Teams") { store.randomizeCaptainsAndTeams() }.buttonStyle(.bordered) }; TeamsList(theme: GameTheme.all.first { $0.id == store.state.config.themeId } ?? GameTheme.all[0], editable: true) } } }
-struct StartCard: View { @EnvironmentObject var store: GameStore; var body: some View { let ready = store.state.players.filter{$0.team == .A}.count >= 2 && store.state.players.filter{$0.team == .B}.count >= 2 && store.state.captainIds[.A] != nil && store.state.captainIds[.B] != nil; Card { Text("Final category: \(store.state.config.category)").font(.headline); Button("START MATCH") { store.startOrNextRound() }.buttonStyle(.borderedProminent).font(.title.bold()).disabled(!ready); Text("Randomize captains first. Need 2 players per team.").font(.caption).opacity(0.8) } } }
+struct ModeSelector: View {
+    @Binding var mode: Int
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width / 2
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 18, style: .continuous).fill(Color(white: 0.93))
+                RoundedRectangle(cornerRadius: 15, style: .continuous)
+                    .fill(LinearGradient(colors: mode == 0 ? [CT.magenta, CT.pink] : [CT.purple, CT.magenta], startPoint: .top, endPoint: .bottom))
+                    .padding(4)
+                    .frame(width: w)
+                    .offset(x: mode == 0 ? 0 : w)
+                    .shadow(color: CT.magenta.opacity(0.5), radius: 6, y: 3)
+                HStack(spacing: 0) {
+                    segment("HOST", "crown.fill", index: 0)
+                    segment("JOIN", "arrow.right.circle.fill", index: 1)
+                }
+            }
+        }
+        .frame(height: 56)
+    }
+    func segment(_ title: String, _ icon: String, index: Int) -> some View {
+        Button {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) { mode = index }
+        } label: {
+            Label(title, systemImage: icon)
+                .font(CT.font(17, .black))
+                .foregroundStyle(mode == index ? .white : CT.inkSoft)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .buttonStyle(.plain)
+    }
+}
 
-struct TeamsList: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; var editable = false; var body: some View { HStack(alignment: .top, spacing: 12) { ForEach(TeamId.allCases, id: \.self) { team in VStack(spacing: 10) { Label(store.teamName(team), systemImage: team == .A ? theme.teamAIcon : theme.teamBIcon).font(.headline); ForEach(store.state.players.filter{$0.team == team}) { p in PlayerRow(player: p, editable: editable) } }.frame(maxWidth: .infinity).padding(10).background(team == .A ? Color.blue.opacity(0.20) : Color.red.opacity(0.20)).clipShape(RoundedRectangle(cornerRadius: 20)) } } } }
-struct PlayerRow: View { @EnvironmentObject var store: GameStore; let player: Player; let editable: Bool; @State private var draft = ""; var body: some View { VStack(spacing: 8) { let captain = store.isCaptain(player); if editable { HStack { if captain { Image(systemName: "crown.fill").foregroundStyle(.yellow) }; TextField("Name", text: $draft).textFieldStyle(.roundedBorder).foregroundColor(.black).colorScheme(.light).onAppear { draft = player.name } }; HStack { Button("A") { store.send(.setPlayerTeam(player.id, .A)) }; Button("B") { store.send(.setPlayerTeam(player.id, .B)) }; Button("Save") { store.send(.renamePlayer(player.id, draft)) } }.font(.caption) } else { HStack { if captain { Image(systemName: "crown.fill").foregroundStyle(.yellow) }; Text(player.name + (store.activePlayerId == player.id ? " • YOU" : "")).font(.subheadline.bold()) } } }.padding(10).frame(maxWidth: .infinity).background(player.team == .A ? Color.blue.opacity(0.45) : Color.red.opacity(0.45)).clipShape(RoundedRectangle(cornerRadius: 14)) } }
+struct MyNameCard: View {
+    @EnvironmentObject var store: GameStore
+    let theme: GameTheme
+    @State private var draft = ""
+    var body: some View {
+        if let p = store.activePlayer {
+            GamePanel(accent: CT.team(p.team).first!) {
+                TeamBadge(team: p.team)
+                Text("Each round, one player per team is randomly picked to be the \(theme.receiver) and guess — it could be you.")
+                    .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+                GameField(placeholder: "Change your name", text: $draft)
+                    .onAppear { draft = p.name }
+                Button("SAVE NAME") { store.send(.renamePlayer(p.id, draft)) }
+                    .buttonStyle(PartyButton.primary)
+                    .disabled(draft.trimmed.isEmpty)
+            }
+        }
+    }
+}
 
-struct RoundView: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; var body: some View { VStack(spacing: 18) { HUDView(theme: theme); if let p = store.activePlayer { TeamBadge(team: p.team); Text("You are \(p.name)").font(.headline) }; if let a = store.state.round?.announcement { Text(a).padding().frame(maxWidth: .infinity).background(.orange).clipShape(RoundedRectangle(cornerRadius: 16)) }; switch store.state.round?.phase { case .roleReveal: RoleRevealView(theme: theme); case .awaitingClue: ClueView(theme: theme); case .opposingDecision, .owningDecision: DecisionView(theme: theme); case .roundOver: RoundOverView(); default: EmptyView() } } } }
-struct HUDView: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; var body: some View { let r = store.state.round; Card { Text("Round \(store.state.roundNumber) • \(store.teamName(r?.clueingTeam ?? .A)) hint").font(.headline); HStack { ForEach(TeamId.allCases, id: \.self) { t in Text("\(store.teamName(t)): \(store.team(t)?.score ?? 0) • Static \(store.team(t)?.statics ?? 0)/\(store.state.config.maxStatics)").font(.caption.bold()).frame(maxWidth: .infinity).padding(8).background(t == .A ? Color.blue.opacity(0.35) : Color.red.opacity(0.35)).clipShape(RoundedRectangle(cornerRadius: 10)) } } } } }
-struct RoleRevealView: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; var body: some View { Card { if let p = store.activePlayer { if store.isReceiver(p) { Text("YOU ARE THE \(theme.receiver.uppercased())").font(.largeTitle.bold()).multilineTextAlignment(.center); Text("Do not look at anyone else's phone.") } else { Text("YOU ARE A \(theme.transmitter.uppercased())").font(.caption.bold()).opacity(0.8); Text(store.state.round?.signal.uppercased() ?? "").font(.system(size: 46, weight: .black)).minimumScaleFactor(0.5); Text("Your \(theme.receiver) is \(store.playerName(store.team(p.team)?.receiverId)).") } } else { Text("Waiting for your player…") }; Button("Everyone is Ready") { store.send(.allReady) }.buttonStyle(.borderedProminent).font(.title2).disabled(!store.isHost) } } }
-struct ClueView: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; @State private var clue = ""; var body: some View { let active = store.activeTransmitterId(); let isActive = store.activePlayerId == active; Card { if let p = store.activePlayer, !store.isReceiver(p) { Text("Signal: \(store.state.round?.signal.uppercased() ?? "")").font(.title.bold()).minimumScaleFactor(0.6) } else { Text("\(theme.receiver) Waiting").font(.title.bold()) }; Text("Hint giver: \(store.playerName(active))").font(.title3.bold()); if isActive { TextField("Type your one-word hint", text: $clue).textFieldStyle(.roundedBorder).foregroundColor(.black).tint(.indigo).colorScheme(.light).font(.title2); Button("Submit Hint") { store.send(.clueGiven(clue)); clue = "" }.buttonStyle(.borderedProminent).font(.title2).disabled(clue.trimmed.isEmpty) } else { Text("Only \(store.playerName(active)) can submit the hint.").font(.headline).multilineTextAlignment(.center) }; LastHintsView() } } }
-struct LastHintsView: View { @EnvironmentObject var store: GameStore; var body: some View { if !(store.state.round?.history.isEmpty ?? true) { VStack(alignment: .leading, spacing: 6) { Text("Hint history").font(.headline); ForEach(Array((store.state.round?.history ?? []).enumerated()), id: \.offset) { _, rec in if let clue = rec.clueText { Text("\(store.teamName(rec.clueingTeam)): \(clue)").font(.caption).frame(maxWidth: .infinity, alignment: .leading) } } } } } }
+struct HostSettings: View {
+    @EnvironmentObject var store: GameStore
+    let theme: GameTheme
+    var body: some View {
+        GamePanel(accent: CT.purple) {
+            SectionLabel(text: "Host Setup", icon: "slider.horizontal.3", color: CT.purple)
 
-struct DecisionView: View { @EnvironmentObject var store: GameStore; let theme: GameTheme; @State private var guess = ""; @State private var confirming = false; var body: some View { let team = store.receiverTeamForDecision(); let receiverId = team.flatMap { store.team($0)?.receiverId }; let canAct = store.activePlayerId == receiverId; Card { if canAct { Text("YOUR TURN TO GUESS").font(.largeTitle.bold()).multilineTextAlignment(.center); Text("\(store.teamName(team ?? .A)) \(theme.receiver)").font(.title3.bold()).padding(.horizontal, 16).padding(.vertical, 8).background(team == .A ? Color.blue.opacity(0.65) : Color.red.opacity(0.65)).clipShape(Capsule()); TextField("Type your guess", text: $guess).textFieldStyle(.roundedBorder).foregroundColor(.black).tint(.indigo).colorScheme(.light).font(.largeTitle); HStack(spacing: 14) { Button("Pass") { if let team { store.send(.receiverPass(team)) }; guess = "" }.buttonStyle(.bordered); Button("Lock Guess") { confirming = true }.buttonStyle(.borderedProminent).disabled(guess.trimmed.isEmpty) }.font(.title2) } else { Image(systemName: "hourglass").font(.system(size: 72)).opacity(0.9); Text("Waiting for the \(theme.receiver)").font(.largeTitle.bold()).multilineTextAlignment(.center); Text("\(store.playerName(receiverId)) is deciding now.").font(.title3.bold()); Text("Guess controls only appear on that player's phone.").font(.subheadline).opacity(0.8) } }.alert("Lock it in?", isPresented: $confirming) { Button("Cancel", role: .cancel) {}; Button("Submit") { if let team { store.send(.receiverGuess(team, guess)) }; guess = "" } } message: { Text(guess) } } }
+            SectionLabel(text: "Theme", icon: "paintpalette.fill", color: CT.magenta)
+            VStack(spacing: 10) {
+                ForEach(GameTheme.all) { t in
+                    let selected = store.state.config.themeId == t.id
+                    Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { store.send(.setTheme(t.id)) } } label: {
+                        HStack {
+                            Image(systemName: t.symbol)
+                            Text(t.name.uppercased())
+                            Spacer()
+                            if selected { Image(systemName: "checkmark.circle.fill") }
+                        }
+                    }
+                    .buttonStyle(selected ? PartyButton(fill: [CT.purple, CT.magenta]) : PartyButton.secondary)
+                }
+            }
 
-struct RoundOverView: View { @EnvironmentObject var store: GameStore; var body: some View { Card { Text("Round Over").font(.largeTitle.bold()); Text("Signal: \(store.state.round?.signal ?? "")").font(.title2); Text("\(store.teamName(store.state.round?.winner ?? .A)) wins by \(store.state.round?.winReason == .lockout ? "lockout" : "correct guess")"); LastHintsView(); Button("Next Round") { store.startOrNextRound() }.buttonStyle(.borderedProminent).disabled(store.state.status == .matchOver || !store.isHost) } } }
-struct MatchOverView: View { @EnvironmentObject var store: GameStore; var body: some View { Card { Text("Match Over").font(.largeTitle.bold()); Text("Final — \(store.teamName(.A)) \(store.team(.A)?.score ?? 0), \(store.teamName(.B)) \(store.team(.B)?.score ?? 0)").font(.title); Button("New Match") { store.send(.reset) }.buttonStyle(.borderedProminent) } } }
+            SectionLabel(text: "Category", icon: "square.grid.2x2.fill", color: CT.cyan)
+            VStack(spacing: 10) {
+                ForEach(categories, id: \.self) { cat in
+                    let on = store.state.config.category == cat
+                    Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { store.send(.setCategory(cat)) } } label: {
+                        HStack {
+                            Image(systemName: categoryIcons[cat] ?? "circle.fill")
+                            Text(cat.uppercased())
+                            Spacer()
+                            if on { Image(systemName: "checkmark.circle.fill") }
+                        }
+                    }
+                    .buttonStyle(on ? PartyButton(fill: [CT.cyan, Color(red: 0.16, green: 0.6, blue: 0.85)]) : PartyButton.secondary)
+                }
+            }
+
+            GameStepper(label: "Rounds", icon: "flag.checkered", display: "Best of \(store.state.config.roundsToWin * 2 - 1)", accent: CT.magenta,
+                        canDown: store.state.config.roundsToWin > 2, canUp: store.state.config.roundsToWin < 4,
+                        onDown: { store.send(.setRoundsToWin(store.state.config.roundsToWin - 1)) },
+                        onUp: { store.send(.setRoundsToWin(store.state.config.roundsToWin + 1)) })
+            GameStepper(label: "Statics", icon: "bolt.slash.fill", display: "\(store.state.config.maxStatics)", accent: CT.orange,
+                        canDown: store.state.config.maxStatics > 2, canUp: store.state.config.maxStatics < 3,
+                        onDown: { store.send(.setMaxStatics(store.state.config.maxStatics - 1)) },
+                        onUp: { store.send(.setMaxStatics(store.state.config.maxStatics + 1)) })
+        }
+    }
+}
+
+struct TeamsEditor: View {
+    @EnvironmentObject var store: GameStore
+    @State private var a = ""
+    @State private var b = ""
+    var body: some View {
+        GamePanel(accent: CT.teamA.first!) {
+            SectionLabel(text: "Teams", icon: "person.3.fill", color: CT.magenta)
+            GameField(placeholder: "Team A name", text: $a).onAppear { a = store.teamName(.A) }
+            GameField(placeholder: "Team B name", text: $b).onAppear { b = store.teamName(.B) }
+            Button("SAVE NAMES") { store.send(.setTeamName(.A, a)); store.send(.setTeamName(.B, b)) }
+                .buttonStyle(PartyButton.secondary)
+            Text("Tap A / B to move a player. Need at least 2 players on each team.")
+                .font(CT.font(12, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+            TeamsList(theme: GameTheme.all.first { $0.id == store.state.config.themeId } ?? GameTheme.all[0], editable: true)
+        }
+    }
+}
+
+struct StartCard: View {
+    @EnvironmentObject var store: GameStore
+    @State private var pulse = false
+    var body: some View {
+        let ready = store.state.players.filter { $0.team == .A }.count >= 2
+            && store.state.players.filter { $0.team == .B }.count >= 2
+        GamePanel(accent: CT.green) {
+            HStack(spacing: 8) {
+                Image(systemName: categoryIcons[store.state.config.category] ?? "square.grid.2x2.fill").foregroundStyle(CT.green)
+                Text("Final category: \(store.state.config.category)").font(CT.font(16, .bold)).foregroundStyle(CT.ink)
+            }
+            Button { store.startOrNextRound() } label: {
+                Label("START GAME", systemImage: "play.fill")
+            }
+            .buttonStyle(PartyButton(fill: [CT.green, Color(red: 0.16, green: 0.68, blue: 0.42)], big: true))
+            .disabled(!ready)
+            .scaleEffect(ready && pulse ? 1.03 : 1.0)
+            .onAppear { if ready { withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true } } }
+            .onChange(of: ready) { newValue in
+                pulse = false
+                if newValue { withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true } }
+            }
+            if !ready {
+                Text("Need at least 2 players on each team to start.")
+                    .font(CT.font(12, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+            }
+        }
+    }
+}
+
+struct TeamsList: View {
+    @EnvironmentObject var store: GameStore
+    let theme: GameTheme
+    var editable = false
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            ForEach(TeamId.allCases, id: \.self) { team in
+                VStack(spacing: 10) {
+                    Label(store.teamName(team).uppercased(), systemImage: team == .A ? theme.teamAIcon : theme.teamBIcon)
+                        .font(CT.font(15, .black)).foregroundStyle(.white).lineLimit(1).minimumScaleFactor(0.7)
+                    ForEach(store.state.players.filter { $0.team == team }) { p in
+                        PlayerRow(player: p, editable: editable)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(12)
+                .background(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .fill(LinearGradient(colors: CT.team(team).map { $0.opacity(0.9) }, startPoint: .top, endPoint: .bottom))
+                )
+                .shadow(color: CT.team(team).last!.opacity(0.4), radius: 6, y: 4)
+            }
+        }
+    }
+}
+
+struct PlayerRow: View {
+    @EnvironmentObject var store: GameStore
+    let player: Player
+    let editable: Bool
+    @State private var draft = ""
+    var body: some View {
+        VStack(spacing: 8) {
+            if editable {
+                TextField("Name", text: $draft)
+                    .font(CT.font(14, .bold)).foregroundColor(CT.ink).colorScheme(.light)
+                    .padding(8).background(RoundedRectangle(cornerRadius: 10).fill(.white)).onAppear { draft = player.name }
+                HStack(spacing: 6) {
+                    Button("A") { store.send(.setPlayerTeam(player.id, .A)) }.buttonStyle(MiniButton(color: CT.teamA.first!))
+                    Button("B") { store.send(.setPlayerTeam(player.id, .B)) }.buttonStyle(MiniButton(color: CT.teamB.first!))
+                    Button("SAVE") { store.send(.renamePlayer(player.id, draft)) }.buttonStyle(MiniButton(color: .white, fg: CT.ink))
+                }
+            } else {
+                Text(player.name + (store.activePlayerId == player.id ? " • YOU" : ""))
+                    .font(CT.font(15, .black)).foregroundStyle(.white)
+            }
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity)
+        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(.white.opacity(0.22)))
+    }
+}
+
+struct MiniButton: ButtonStyle {
+    var color: Color
+    var fg: Color = .white
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(CT.font(12, .black)).foregroundColor(fg)
+            .padding(.vertical, 6).padding(.horizontal, 10)
+            .background(Capsule().fill(color))
+            .scaleEffect(configuration.isPressed ? 0.92 : 1)
+            .animation(.spring(response: 0.2, dampingFraction: 0.6), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Round
+
+struct RoundView: View {
+    @EnvironmentObject var store: GameStore
+    let theme: GameTheme
+    var body: some View {
+        VStack(spacing: 20) {
+            LogoHeader(subtitle: "ROUND \(store.state.roundNumber)")
+            HUDView(theme: theme)
+            if let p = store.activePlayer {
+                VStack(spacing: 8) {
+                    TeamBadge(team: p.team)
+                    Text("You are \(p.name)").font(CT.font(16, .bold)).foregroundStyle(.white)
+                }
+            }
+            if let a = store.state.round?.announcement {
+                HStack(spacing: 8) {
+                    Image(systemName: "bolt.fill")
+                    Text(a).font(CT.font(15, .bold))
+                }
+                .foregroundStyle(CT.ink)
+                .padding().frame(maxWidth: .infinity)
+                .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom)))
+                .shadow(color: CT.orange.opacity(0.5), radius: 8, y: 4)
+            }
+            switch store.state.round?.phase {
+            case .roleReveal: RoleRevealView(theme: theme)
+            case .awaitingClue: ClueView(theme: theme)
+            case .opposingDecision, .owningDecision: DecisionView(theme: theme)
+            case .roundOver: RoundOverView()
+            default: EmptyView()
+            }
+        }
+    }
+}
+
+struct HUDView: View {
+    @EnvironmentObject var store: GameStore
+    let theme: GameTheme
+    var body: some View {
+        let r = store.state.round
+        GamePanel(accent: CT.magenta) {
+            HStack(spacing: 8) {
+                Image(systemName: "megaphone.fill").foregroundStyle(CT.magenta)
+                Text("\(store.teamName(r?.clueingTeam ?? .A)) HINT").font(CT.font(15, .black)).foregroundStyle(CT.ink)
+            }
+            HStack(spacing: 12) {
+                ForEach(TeamId.allCases, id: \.self) { t in
+                    VStack(spacing: 4) {
+                        Text(store.teamName(t).uppercased()).font(CT.font(12, .black)).foregroundStyle(.white).lineLimit(1).minimumScaleFactor(0.7)
+                        Text("\(store.team(t)?.score ?? 0)").font(CT.font(34, .black)).foregroundStyle(.white)
+                        Text("Static \(store.team(t)?.statics ?? 0)/\(store.state.config.maxStatics)")
+                            .font(CT.font(11, .bold)).foregroundStyle(.white.opacity(0.85))
+                    }
+                    .frame(maxWidth: .infinity).padding(12)
+                    .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(LinearGradient(colors: CT.team(t), startPoint: .top, endPoint: .bottom)))
+                    .shadow(color: CT.team(t).last!.opacity(0.45), radius: 6, y: 3)
+                }
+            }
+        }
+    }
+}
+
+/// Animated "auto-continue" indicator shown where a manual button used to be.
+struct AutoAdvanceHint: View {
+    let text: String
+    @State private var on = false
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(0..<3, id: \.self) { i in
+                Circle().fill(CT.magenta)
+                    .frame(width: 8, height: 8)
+                    .opacity(on ? 1 : 0.25)
+                    .scaleEffect(on ? 1 : 0.6)
+                    .animation(.easeInOut(duration: 0.55).repeatForever().delay(Double(i) * 0.16), value: on)
+            }
+            Text(text).font(CT.font(13, .black)).foregroundStyle(CT.inkSoft).kerning(1)
+        }
+        .onAppear { on = true }
+    }
+}
+
+struct RoleRevealView: View {
+    @EnvironmentObject var store: GameStore
+    let theme: GameTheme
+    var body: some View {
+        GamePanel(accent: CT.purple) {
+            if let p = store.activePlayer {
+                if store.isReceiver(p) {
+                    Text("YOU ARE THE\n\(theme.receiver.uppercased())")
+                        .font(CT.font(30, .black)).foregroundStyle(CT.ink).multilineTextAlignment(.center)
+                    Text("Do not look at anyone else's phone.")
+                        .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft)
+                } else {
+                    Text("YOU ARE A \(theme.transmitter.uppercased())")
+                        .font(CT.font(14, .black)).foregroundStyle(CT.inkSoft)
+                    Text(store.state.round?.signal.uppercased() ?? "")
+                        .font(CT.font(44, .black)).foregroundStyle(LinearGradient(colors: [CT.purple, CT.magenta], startPoint: .top, endPoint: .bottom))
+                        .minimumScaleFactor(0.5).multilineTextAlignment(.center)
+                    Text("Your \(theme.receiver) is \(store.playerName(store.team(p.team)?.receiverId)).")
+                        .font(CT.font(15, .bold)).foregroundStyle(CT.ink)
+                }
+            } else {
+                Text("Waiting for your player…").font(CT.font(17, .bold)).foregroundStyle(CT.inkSoft)
+            }
+            AutoAdvanceHint(text: "GET READY…")
+        }
+        .task {
+            // Host is authoritative: auto-advance after a beat so everyone can read their role.
+            guard store.isHost else { return }
+            try? await Task.sleep(nanoseconds: 3_500_000_000)
+            if store.state.round?.phase == .roleReveal { store.send(.allReady) }
+        }
+    }
+}
+
+struct ClueView: View {
+    @EnvironmentObject var store: GameStore
+    let theme: GameTheme
+    @State private var clue = ""
+    var body: some View {
+        let active = store.activeTransmitterId()
+        let isActive = store.activePlayerId == active
+        GamePanel(accent: CT.magenta) {
+            if let p = store.activePlayer, !store.isReceiver(p) {
+                Text("SIGNAL").font(CT.font(13, .black)).foregroundStyle(CT.magenta)
+                Text(store.state.round?.signal.uppercased() ?? "")
+                    .font(CT.font(36, .black)).foregroundStyle(CT.ink).minimumScaleFactor(0.6).multilineTextAlignment(.center)
+            } else {
+                Text("\(theme.receiver.uppercased()) WAITING").font(CT.font(26, .black)).foregroundStyle(CT.ink)
+            }
+            Text("Hint giver: \(store.playerName(active))").font(CT.font(17, .bold)).foregroundStyle(CT.inkSoft)
+            if isActive {
+                GameField(placeholder: "Type your one-word hint", text: $clue)
+                Button("SUBMIT HINT") { store.send(.clueGiven(clue)); clue = "" }
+                    .buttonStyle(PartyButton.primary)
+                    .disabled(clue.trimmed.isEmpty)
+            } else {
+                Text("Only \(store.playerName(active)) can submit the hint.")
+                    .font(CT.font(15, .bold)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+            }
+            LastHintsView()
+        }
+    }
+}
+
+struct LastHintsView: View {
+    @EnvironmentObject var store: GameStore
+    var body: some View {
+        if !(store.state.round?.history.isEmpty ?? true) {
+            VStack(alignment: .leading, spacing: 6) {
+                SectionLabel(text: "Hint History", icon: "text.bubble.fill", color: CT.purple)
+                ForEach(Array((store.state.round?.history ?? []).enumerated()), id: \.offset) { _, rec in
+                    if let clue = rec.clueText {
+                        HStack {
+                            Circle().fill(CT.team(rec.clueingTeam).first!).frame(width: 8, height: 8)
+                            Text("\(store.teamName(rec.clueingTeam)): \(clue)")
+                                .font(CT.font(13, .semibold)).foregroundStyle(CT.ink)
+                            Spacer()
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+}
+
+struct DecisionView: View {
+    @EnvironmentObject var store: GameStore
+    let theme: GameTheme
+    @State private var guess = ""
+    @State private var confirming = false
+    var body: some View {
+        let team = store.receiverTeamForDecision()
+        let receiverId = team.flatMap { store.team($0)?.receiverId }
+        let canAct = store.activePlayerId == receiverId
+        GamePanel(accent: canAct ? CT.green : CT.purple) {
+            if canAct {
+                Text("YOUR TURN TO GUESS").font(CT.font(28, .black)).foregroundStyle(CT.ink).multilineTextAlignment(.center)
+                Text("\(store.teamName(team ?? .A)) \(theme.receiver)".uppercased())
+                    .font(CT.font(15, .black)).foregroundStyle(.white)
+                    .padding(.horizontal, 16).padding(.vertical, 8)
+                    .background(Capsule().fill(LinearGradient(colors: CT.team(team ?? .A), startPoint: .top, endPoint: .bottom)))
+                GameField(placeholder: "Type your guess", text: $guess, big: true)
+                HStack(spacing: 12) {
+                    Button("PASS") { if let team { store.send(.receiverPass(team)) }; guess = "" }
+                        .buttonStyle(PartyButton.secondary)
+                    Button("LOCK GUESS") { confirming = true }
+                        .buttonStyle(PartyButton.go)
+                        .disabled(guess.trimmed.isEmpty)
+                }
+            } else {
+                Image(systemName: "hourglass")
+                    .font(.system(size: 64, weight: .black))
+                    .foregroundStyle(LinearGradient(colors: [CT.purple, CT.magenta], startPoint: .top, endPoint: .bottom))
+                Text("Waiting for the \(theme.receiver)").font(CT.font(26, .black)).foregroundStyle(CT.ink).multilineTextAlignment(.center)
+                Text("\(store.playerName(receiverId)) is deciding now.").font(CT.font(16, .bold)).foregroundStyle(CT.inkSoft)
+                Text("Guess controls only appear on that player's phone.")
+                    .font(CT.font(13, .medium)).foregroundStyle(CT.inkSoft.opacity(0.8)).multilineTextAlignment(.center)
+            }
+        }
+        .alert("Lock it in?", isPresented: $confirming) {
+            Button("Cancel", role: .cancel) {}
+            Button("Submit") { if let team { store.send(.receiverGuess(team, guess)) }; guess = "" }
+        } message: { Text(guess) }
+    }
+}
+
+struct RoundOverView: View {
+    @EnvironmentObject var store: GameStore
+    var body: some View {
+        GamePanel(accent: CT.gold) {
+            Image(systemName: "party.popper.fill")
+                .font(.system(size: 40, weight: .black))
+                .foregroundStyle(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom))
+            Text("ROUND OVER").font(CT.font(30, .black)).foregroundStyle(CT.ink)
+            Text("Signal: \(store.state.round?.signal ?? "")").font(CT.font(18, .bold)).foregroundStyle(CT.inkSoft)
+            Text("\(store.teamName(store.state.round?.winner ?? .A)) wins by \(store.state.round?.winReason == .lockout ? "lockout" : "correct guess")!")
+                .font(CT.font(17, .black)).foregroundStyle(CT.ink).multilineTextAlignment(.center)
+            LastHintsView()
+            AutoAdvanceHint(text: "NEXT ROUND STARTING…")
+        }
+        .task {
+            // Host is authoritative: pause so players can see the result, then roll on.
+            guard store.isHost else { return }
+            try? await Task.sleep(nanoseconds: 4_500_000_000)
+            if store.state.status == .inRound, store.state.round?.phase == .roundOver { store.startOrNextRound() }
+        }
+    }
+}
+
+struct MatchOverView: View {
+    @EnvironmentObject var store: GameStore
+    var body: some View {
+        VStack(spacing: 20) {
+            LogoHeader(subtitle: "MATCH OVER")
+            GamePanel(accent: CT.gold) {
+                Image(systemName: "trophy.fill")
+                    .font(.system(size: 56, weight: .black))
+                    .foregroundStyle(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom))
+                    .shadow(color: CT.orange.opacity(0.5), radius: 8, y: 4)
+                Text("MATCH OVER").font(CT.font(34, .black)).foregroundStyle(CT.ink)
+                HStack(spacing: 12) {
+                    scoreChip(.A)
+                    scoreChip(.B)
+                }
+                if store.isHost {
+                    Button("NEW MATCH") { store.send(.reset) }
+                        .buttonStyle(PartyButton(fill: [CT.green, Color(red: 0.16, green: 0.68, blue: 0.42)], big: true))
+                } else {
+                    Text("Waiting for the host to start a new match…")
+                        .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
+                }
+            }
+        }
+    }
+    func scoreChip(_ t: TeamId) -> some View {
+        VStack(spacing: 4) {
+            Text(store.teamName(t).uppercased()).font(CT.font(13, .black)).foregroundStyle(.white).lineLimit(1).minimumScaleFactor(0.7)
+            Text("\(store.team(t)?.score ?? 0)").font(CT.font(40, .black)).foregroundStyle(.white)
+        }
+        .frame(maxWidth: .infinity).padding(14)
+        .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(colors: CT.team(t), startPoint: .top, endPoint: .bottom)))
+        .shadow(color: CT.team(t).last!.opacity(0.45), radius: 6, y: 3)
+    }
+}
+
 private extension String { var trimmed: String { trimmingCharacters(in: .whitespacesAndNewlines) } }

@@ -13,6 +13,6 @@ struct TurnRecord: Codable, Equatable { var clueingTeam: TeamId; var transmitter
 struct GuessAction: Codable, Equatable { var guess: String?; var correct: Bool; var passed: Bool { guess == nil } }
 struct RoundState: Codable, Equatable { var signal: String; var acceptedAnswers: [String]; var clueingTeam: TeamId; var phase: Phase; var history: [TurnRecord] = []; var winner: TeamId?; var winReason: WinReason?; var announcement: String? }
 struct GameConfig: Codable, Equatable { var maxStatics = 2; var roundsToWin = 3; var wordPack = "party-core"; var teamNames: [TeamId: String] = [.A: "Team A", .B: "Team B"]; var themeId = "signal"; var category = "Everything" }
-struct GameState: Codable, Equatable { var players: [Player] = []; var teams: [TeamId: TeamState] = [:]; var captainIds: [TeamId: String] = [:]; var teamCategoryVotes: [TeamId: String] = [:]; var round: RoundState?; var roundNumber = 0; var config = GameConfig(); var status: Status = .lobby; var usedSignals: Set<String> = []; var themeVotes: [String: String] = [:] }
+struct GameState: Codable, Equatable { var players: [Player] = []; var teams: [TeamId: TeamState] = [:]; var round: RoundState?; var roundNumber = 0; var config = GameConfig(); var status: Status = .lobby; var usedSignals: Set<String> = [] }
 struct WordEntry: Codable, Equatable { let signal: String; let accepted: [String]; let difficulty: Int; let category: String?; let theme: String? }
 struct WordPack: Codable, Equatable { let id: String; let name: String; let words: [WordEntry] }
