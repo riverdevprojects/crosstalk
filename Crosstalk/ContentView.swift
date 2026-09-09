@@ -169,13 +169,13 @@ struct GamePanel<Content: View>: View {
             .background(
                 RoundedRectangle(cornerRadius: 30, style: .continuous)
                     .fill(CT.panel)
+                    .shadow(color: accent.opacity(0.35), radius: 0, x: 0, y: 8)
+                    .shadow(color: Color.black.opacity(0.18), radius: 16, x: 0, y: 10)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 30, style: .continuous)
                     .stroke(accent.opacity(0.25), lineWidth: 2)
             )
-            .shadow(color: accent.opacity(0.45), radius: 0, x: 0, y: 8)
-            .shadow(color: Color.black.opacity(0.20), radius: 16, x: 0, y: 10)
             .foregroundStyle(CT.ink)
             .scaleEffect(appeared ? 1 : 0.94)
             .opacity(appeared ? 1 : 0)
@@ -218,12 +218,12 @@ struct PartyButton: ButtonStyle {
             .background(
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .fill(LinearGradient(colors: fill, startPoint: .top, endPoint: .bottom))
+                    .shadow(color: (fill.last ?? .black).opacity(0.45), radius: pressed ? 2 : 9, x: 0, y: pressed ? 1 : 6)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .stroke(.white.opacity(0.35), lineWidth: 1.5)
             )
-            .shadow(color: (fill.last ?? .black).opacity(0.55), radius: pressed ? 2 : 9, x: 0, y: pressed ? 1 : 6)
             .offset(y: pressed ? 3 : 0)
             .scaleEffect(pressed ? 0.97 : 1)
             .opacity(enabled ? 1 : 0.45)
@@ -330,8 +330,11 @@ struct TeamBadge: View {
             .font(CT.font(22, .black))
             .foregroundStyle(.white)
             .padding(.horizontal, 20).padding(.vertical, 10)
-            .background(Capsule().fill(LinearGradient(colors: CT.team(team), startPoint: .top, endPoint: .bottom)))
-            .shadow(color: CT.team(team).last!.opacity(0.5), radius: 6, y: 3)
+            .background(
+                Capsule()
+                    .fill(LinearGradient(colors: CT.team(team), startPoint: .top, endPoint: .bottom))
+                    .shadow(color: CT.team(team).last!.opacity(0.45), radius: 6, y: 3)
+            )
     }
 }
 
@@ -756,8 +759,8 @@ struct TeamsList: View {
                 .background(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
                         .fill(LinearGradient(colors: CT.team(team).map { $0.opacity(0.9) }, startPoint: .top, endPoint: .bottom))
+                        .shadow(color: CT.team(team).last!.opacity(0.35), radius: 6, y: 4)
                 )
-                .shadow(color: CT.team(team).last!.opacity(0.4), radius: 6, y: 4)
             }
         }
     }
@@ -825,8 +828,11 @@ struct RoundView: View {
                 }
                 .foregroundStyle(CT.ink)
                 .padding().frame(maxWidth: .infinity)
-                .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom)))
-                .shadow(color: CT.orange.opacity(0.5), radius: 8, y: 4)
+                .background(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .fill(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom))
+                        .shadow(color: CT.orange.opacity(0.4), radius: 8, y: 4)
+                )
             }
             switch store.state.round?.phase {
             case .roleReveal: RoleRevealView(theme: theme)
@@ -858,8 +864,11 @@ struct HUDView: View {
                             .font(CT.font(11, .bold)).foregroundStyle(.white.opacity(0.85))
                     }
                     .frame(maxWidth: .infinity).padding(12)
-                    .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(LinearGradient(colors: CT.team(t), startPoint: .top, endPoint: .bottom)))
-                    .shadow(color: CT.team(t).last!.opacity(0.45), radius: 6, y: 3)
+                    .background(
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .fill(LinearGradient(colors: CT.team(t), startPoint: .top, endPoint: .bottom))
+                            .shadow(color: CT.team(t).last!.opacity(0.35), radius: 6, y: 3)
+                    )
                 }
             }
         }
@@ -1066,8 +1075,11 @@ struct MatchOverView: View {
             Text("\(store.team(t)?.score ?? 0)").font(CT.font(40, .black)).foregroundStyle(.white)
         }
         .frame(maxWidth: .infinity).padding(14)
-        .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(colors: CT.team(t), startPoint: .top, endPoint: .bottom)))
-        .shadow(color: CT.team(t).last!.opacity(0.45), radius: 6, y: 3)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(LinearGradient(colors: CT.team(t), startPoint: .top, endPoint: .bottom))
+                .shadow(color: CT.team(t).last!.opacity(0.35), radius: 6, y: 3)
+        )
     }
 }
 
