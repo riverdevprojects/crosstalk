@@ -25,9 +25,23 @@ enum GuessMatcher {
         return out
     }
     static func levenshtein(_ a: String, _ b: String) -> Int {
-        let aa = Array(a), bb = Array(b); var prev = Array(0...bb.count)
-        for i in 1...aa.count { var row = [i] + Array(repeating: 0, count: bb.count); for j in 1...bb.count { row[j] = min(prev[j] + 1, row[j-1] + 1, prev[j-1] + (aa[i-1] == bb[j-1] ? 0 : 1)) }; prev = row }
-        return prev[bb.count]
+        let aa = Array(a), bb = Array(b)
+        guard !aa.isEmpty else { return bb.count }
+        guard !bb.isEmpty else { return aa.count }
+
+        var previous = Array(0...bb.count)
+        for i in 1...aa.count {
+            var row = [i] + Array(repeating: 0, count: bb.count)
+            for j in 1...bb.count {
+                row[j] = min(
+                    previous[j] + 1,
+                    row[j - 1] + 1,
+                    previous[j - 1] + (aa[i - 1] == bb[j - 1] ? 0 : 1)
+                )
+            }
+            previous = row
+        }
+        return previous[bb.count]
     }
 }
 
@@ -58,7 +72,11 @@ struct GameEngine {
             round.phase = .opposingDecision; round.announcement = nil; state.round = round
         case .receiverPass(let team): decide(&state, team: team, guess: nil)
         case .receiverGuess(let team, let guess): decide(&state, team: team, guess: guess)
-        case .reset: state = GameState()
+        case .reset:
+            let players = state.players
+            let config = state.config
+            state = GameState(players: players, config: config)
+            state.status = .lobby
         }
     }
     private static func start(_ state: inout GameState, _ word: WordEntry) {

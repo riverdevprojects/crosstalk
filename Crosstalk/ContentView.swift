@@ -341,12 +341,12 @@ struct LogoHeader: View {
     var subtitle: String = "THE ULTIMATE PARTY GAME"
     @State private var wiggle = false
     var body: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 12) {
+        VStack(spacing: 8) {
+            HStack(spacing: 6) {
                 ZStack {
                     Circle().fill(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom))
                         .frame(width: 56, height: 56)
-                        .shadow(color: CT.orange.opacity(0.6), radius: 8, y: 4)
+                        .shadow(color: CT.orange.opacity(0.35), radius: 6, y: 3)
                     Image(systemName: "antenna.radiowaves.left.and.right")
                         .font(.system(size: 26, weight: .black))
                         .foregroundStyle(.white)
@@ -355,18 +355,16 @@ struct LogoHeader: View {
                 Text("CROSSTALK")
                     .font(CT.font(40, .black))
                     .foregroundStyle(.white)
-                    .kerning(1)
+                    .kerning(0)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
-                    .shadow(color: CT.bgTop.opacity(0.6), radius: 0, x: 0, y: 3)
-                    .shadow(color: .black.opacity(0.25), radius: 8, y: 4)
             }
             Text(subtitle)
                 .font(CT.font(14, .bold))
                 .foregroundStyle(.white.opacity(0.92))
-                .kerning(2)
-                .padding(.vertical, 5).padding(.horizontal, 14)
-                .background(Capsule().fill(.white.opacity(0.18)))
+                .kerning(1)
+                .padding(.vertical, 4).padding(.horizontal, 12)
+                .background(Capsule().fill(.white.opacity(0.12)))
         }
         .padding(.top, 8)
         .onAppear { withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) { wiggle = true } }
@@ -575,10 +573,10 @@ struct RoomCodeCard: View {
             SectionLabel(text: "Room Code", icon: "number", color: CT.orange)
             Text(store.network.roomCode.isEmpty ? "----" : store.network.roomCode)
                 .font(CT.font(56, .black))
-                .kerning(10)
+                .kerning(6)
                 .foregroundStyle(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom))
                 .lineLimit(1).minimumScaleFactor(0.5)
-                .shadow(color: CT.orange.opacity(0.3), radius: 6, y: 3)
+                .shadow(color: CT.orange.opacity(0.18), radius: 3, y: 2)
             Text("Friends pick JOIN and type this code to enter your room.")
                 .font(CT.font(13, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
             StatusPill(connected: count > 0, text: count == 0 ? "Waiting for players" : "\(count) connected")
