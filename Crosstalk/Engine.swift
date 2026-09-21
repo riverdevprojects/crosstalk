@@ -47,27 +47,51 @@ enum GuessMatcher {
 
 struct GameEngine {
     static func reduce(_ state: inout GameState, _ action: GameAction) {
+        // The reducer also checks phases: authorization alone cannot prevent stale actions.
         switch action {
-        case .addPlayer(let name): state.players.append(Player(name: name, team: state.players.filter{$0.team == .A}.count <= state.players.filter{$0.team == .B}.count ? .A : .B))
+        case .addPlayer, .upsertPlayer, .renamePlayer, .setPlayerTeam, .setLobbyPlayers,
+             .removePlayer, .assignTeams, .setTeamName, .setTheme, .setCategory,
+             .setRoundsToWin, .setMaxStatics:
+            guard state.status == .lobby else { return }
+        case .startRound:
+            guard state.status == .lobby else { return }
+        case .nextRound:
+            guard state.status == .inRound, state.round?.phase == .roundOver else { return }
+        case .allReady:
+            guard state.status == .inRound, state.round?.phase == .roleReveal else { return }
+        case .clueGiven, .receiverPass, .receiverGuess:
+            guard state.status == .inRound else { return }
+        case .reset: break
+        }
+        switch action {
+        case .addPlayer(let name):
+            guard InputRules.validName(name), state.players.count < 8 else { return }; state.players.append(Player(name: name, team: state.players.filter{$0.team == .A}.count <= state.players.filter{$0.team == .B}.count ? .A : .B))
         case .upsertPlayer(var player):
+            guard InputRules.validName(player.name), !player.id.isEmpty, player.id.count <= 64 else { return }
             if let i = state.players.firstIndex(where: { $0.id == player.id }) { state.players[i].name = player.name }
-            else { player.team = state.players.filter{$0.team == .A}.count <= state.players.filter{$0.team == .B}.count ? .A : .B; state.players.append(player) }
-        case .renamePlayer(let id, let name): if let i = state.players.firstIndex(where: { $0.id == id }) { state.players[i].name = name }
+            else { guard state.players.count < 8 else { return }; player.team = state.players.filter{$0.team == .A}.count <= state.players.filter{$0.team == .B}.count ? .A : .B; state.players.append(player) }
+        case .renamePlayer(let id, let name): guard InputRules.validName(name) else { return }; if let i = state.players.firstIndex(where: { $0.id == id }) { state.players[i].name = name }
         case .setPlayerTeam(let id, let team): if let i = state.players.firstIndex(where: { $0.id == id }) { state.players[i].team = team }
-        case .setLobbyPlayers(let players): state.players = players
+        case .setLobbyPlayers(let players):
+            guard players.count <= 8, Set(players.map(\.id)).count == players.count, players.allSatisfy({ InputRules.validName($0.name) && !$0.id.isEmpty }) else { return }; state.players = players
         case .removePlayer(let id): state.players.removeAll { $0.id == id }
         case .assignTeams: for i in state.players.indices { state.players[i].team = i % 2 == 0 ? .A : .B }
-        case .setTeamName(let team, let name): state.config.teamNames[team] = name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Team \(team.rawValue)" : name
-        case .setTheme(let themeId): state.config.themeId = themeId
-        case .setCategory(let category): state.config.category = category
+        case .setTeamName(let team, let name): guard InputRules.validName(name) else { return }; state.config.teamNames[team] = name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Team \(team.rawValue)" : name
+        case .setTheme(let themeId):
+            guard ["signal", "medieval", "space", "pirates"].contains(themeId) else { return }; state.config.themeId = themeId; state.config.category = "Everything"
+        case .setCategory(let category):
+            guard ["Everything", "Animals", "Food", "Places", "Objects"].contains(category) else { return }; state.config.category = category
         case .setRoundsToWin(let rounds): state.config.roundsToWin = min(max(rounds, 2), 4)
         case .setMaxStatics(let statics): state.config.maxStatics = min(max(statics, 2), 3)
         case .startRound(let word), .nextRound(let word): start(&state, word)
         case .allReady: state.round?.phase = .awaitingClue
         case .clueGiven(let clue):
-            guard var round = state.round, round.phase == .awaitingClue else { return }
+            guard var round = state.round, round.phase == .awaitingClue,
+                  InputRules.clueError(clue, answers: round.acceptedAnswers) == nil,
+                  let team = state.teams[round.clueingTeam],
+                  team.transmitterOrder.indices.contains(team.rotationIndex) else { return }
             let clueing = round.clueingTeam
-            let transmitterId = state.teams[clueing]!.transmitterOrder[state.teams[clueing]!.rotationIndex]
+            let transmitterId = team.transmitterOrder[team.rotationIndex]
             round.history.append(TurnRecord(clueingTeam: clueing, transmitterId: transmitterId, clueText: clue.trimmingCharacters(in: .whitespacesAndNewlines)))
             round.phase = .opposingDecision; round.announcement = nil; state.round = round
         case .receiverPass(let team): decide(&state, team: team, guess: nil)
@@ -75,12 +99,14 @@ struct GameEngine {
         case .reset:
             let players = state.players
             let config = state.config
-            state = GameState(players: players, config: config)
+            state = GameState(players: players, config: config, revision: state.revision)
             state.status = .lobby
         }
     }
     private static func start(_ state: inout GameState, _ word: WordEntry) {
+        guard !word.signal.isEmpty, !state.usedSignals.contains(word.signal) else { return }
         let a = state.players.filter{$0.team == .A}, b = state.players.filter{$0.team == .B}; guard a.count >= 2 && b.count >= 2 else { return }
+        state.notice = nil
         state.roundNumber += 1; state.status = .inRound; state.usedSignals.insert(word.signal)
         // The only randomized role: who guesses (doesn't know the word) on each team, re-rolled every round.
         let ar = a.randomElement()!.id
@@ -91,7 +117,9 @@ struct GameEngine {
         state.round = RoundState(signal: word.signal, acceptedAnswers: [word.signal] + word.accepted, clueingTeam: state.roundNumber % 2 == 1 ? .A : .B, phase: .roleReveal)
     }
     private static func decide(_ state: inout GameState, team: TeamId, guess: String?) {
-        guard var round = state.round else { return }
+        guard var round = state.round, !round.history.isEmpty,
+              state.teams[.A] != nil, state.teams[.B] != nil else { return }
+        if let guess, !InputRules.validGuess(guess) { return }
         let clueing = round.clueingTeam, opposing = clueing == .A ? TeamId.B : .A
         guard (round.phase == .opposingDecision && team == opposing) || (round.phase == .owningDecision && team == clueing) else { return }
         let correct = guess.map { GuessMatcher.isCorrect($0, accepted: round.acceptedAnswers) } ?? false
@@ -99,10 +127,32 @@ struct GameEngine {
         if round.history.isEmpty || round.history.last?.owningAction != nil { round.history.append(TurnRecord(clueingTeam: clueing, transmitterId: state.teams[clueing]!.transmitterOrder[state.teams[clueing]!.rotationIndex], clueText: nil)) }
         if round.phase == .opposingDecision { round.history[round.history.count-1].opposingAction = action } else { round.history[round.history.count-1].owningAction = action }
         if correct { finish(&state, &round, winner: team, reason: .correctGuess); return }
-        if let g = guess { state.teams[team]!.statics += 1; round.announcement = "Team \(team.rawValue) guessed \"\(g)\" — Static (\(state.teams[team]!.statics)/\(state.config.maxStatics))"; if state.teams[team]!.statics >= state.config.maxStatics { finish(&state, &round, winner: team == .A ? .B : .A, reason: .lockout); return } }
+        if let g = guess { state.teams[team]!.statics += 1; round.announcement = "\(state.config.teamNames[team] ?? "Team \(team.rawValue)") guessed \"\(g)\" — Static (\(state.teams[team]!.statics)/\(state.config.maxStatics))"; if state.teams[team]!.statics >= state.config.maxStatics { finish(&state, &round, winner: team == .A ? .B : .A, reason: .lockout); return } }
         if round.phase == .opposingDecision { round.phase = .owningDecision } else { advance(&state, &round) }
         state.round = round
     }
     private static func finish(_ state: inout GameState, _ round: inout RoundState, winner: TeamId, reason: WinReason) { round.winner = winner; round.winReason = reason; round.phase = .roundOver; state.teams[winner]!.score += 1; state.status = state.teams[winner]!.score >= state.config.roundsToWin ? .matchOver : .inRound; state.round = round }
     private static func advance(_ state: inout GameState, _ round: inout RoundState) { let old = round.clueingTeam; state.teams[old]!.rotationIndex = (state.teams[old]!.rotationIndex + 1) % state.teams[old]!.transmitterOrder.count; round.clueingTeam = old == .A ? .B : .A; round.phase = .awaitingClue }
+}
+
+// A peer is bound to one player during the lobby handshake. Never trust an ID
+// or team supplied by the action itself to establish the sender's identity.
+enum ActionAuthorization {
+    static func allows(_ action: GameAction, playerId: String, isHost: Bool, state: GameState) -> Bool {
+        guard state.players.contains(where: { $0.id == playerId }) else { return false }
+        switch action {
+        case .renamePlayer(let id, _): return state.status == .lobby && (isHost || id == playerId)
+        case .clueGiven:
+            guard let round = state.round, round.phase == .awaitingClue,
+                  let team = state.teams[round.clueingTeam],
+                  team.transmitterOrder.indices.contains(team.rotationIndex) else { return false }
+            return state.status == .inRound && team.transmitterOrder[team.rotationIndex] == playerId
+        case .receiverPass(let team), .receiverGuess(let team, _):
+            guard state.status == .inRound, let round = state.round else { return false }
+            let expected = round.phase == .opposingDecision ? (round.clueingTeam == .A ? TeamId.B : .A) : round.clueingTeam
+            return (round.phase == .opposingDecision || round.phase == .owningDecision)
+                && team == expected && state.teams[team]?.receiverId == playerId
+        default: return isHost
+        }
+    }
 }

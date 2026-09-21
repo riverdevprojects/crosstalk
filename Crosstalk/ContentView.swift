@@ -43,7 +43,9 @@ enum CT {
     static let teamB: [Color] = [Color(red: 1.0, green: 0.36, blue: 0.62), Color(red: 1.0, green: 0.52, blue: 0.24)]
     static func team(_ t: TeamId) -> [Color] { t == .A ? teamA : teamB }
 
-    static func font(_ size: CGFloat, _ weight: Font.Weight = .heavy) -> Font { .system(size: size, weight: weight, design: .rounded) }
+    static func font(_ size: CGFloat, _ weight: Font.Weight = .heavy) -> Font {
+        .custom("ArialRoundedMTBold", size: size, relativeTo: .body).weight(weight)
+    }
 }
 
 // MARK: - Root
@@ -54,14 +56,53 @@ struct ContentView: View {
     @EnvironmentObject var store: GameStore
     @State private var screen: FlowScreen = .welcome
     @State private var playerName = ""
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var showingRules = false
+    @State private var confirmingLeave = false
     var theme: GameTheme { GameTheme.all.first { $0.id == store.state.config.themeId } ?? GameTheme.all[0] }
 
     var body: some View {
         ZStack {
             PartyBackground()
-            content
+            VStack(spacing: 8) {
+                if store.state.status != .lobby {
+                    HStack {
+                        Button("Leave room") { confirmingLeave = true }
+                        Spacer()
+                        if store.isHost { Button("Return to lobby") { store.send(.reset) } }
+                    }
+                    .font(CT.font(16, .bold)).foregroundStyle(.white).padding(.horizontal, 20)
+                }
+                Button("How to play") { showingRules = true }
+                    .font(CT.font(16, .bold)).foregroundStyle(.white).padding(.top, 8)
+                if let notice = store.state.notice {
+                    Text(notice).font(CT.font(15, .medium)).foregroundStyle(.white).padding(.horizontal)
+                }
+                if let error = store.network.connectionError {
+                    VStack(spacing: 12) {
+                        Text(error).font(CT.font(17, .bold))
+                        if store.network.mode == .joining {
+                            Button("Retry joining") { store.retryJoin() }.buttonStyle(PartyButton.primary)
+                        }
+                        Button("Leave room") { leave() }.buttonStyle(PartyButton.secondary)
+                    }
+                    .padding().background(CT.panel).foregroundStyle(CT.ink).cornerRadius(20).padding()
+                } else {
+                    content
+                }
+            }
         }
+        .transaction { if reduceMotion { $0.animation = nil; $0.disablesAnimations = true } }
         .tint(CT.magenta)
+        .sheet(isPresented: $showingRules) { RulesView() }
+        .confirmationDialog("Leave this room?", isPresented: $confirmingLeave, titleVisibility: .visible) {
+            Button("Leave room", role: .destructive) { leave() }
+        } message: {
+            Text(store.isHost ? "Leaving disconnects everyone from this room." : "Leaving an active match returns everyone to the lobby.")
+        }
+        .alert("Crosstalk", isPresented: Binding(get: { store.errorMessage != nil }, set: { if !$0 { store.errorMessage = nil } })) {
+            Button("OK") { store.errorMessage = nil }
+        } message: { Text(store.errorMessage ?? "") }
     }
 
     @ViewBuilder var content: some View {
@@ -124,6 +165,7 @@ struct PartyScroll<Content: View>: View {
 // MARK: - Animated background
 
 struct PartyBackground: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var float = false
     var body: some View {
         ZStack {
@@ -144,7 +186,9 @@ struct PartyBackground: View {
             decor("circle.fill", size: 16, x: -60, y: -300, rot: 0, opacity: 0.22)
             decor("star.fill", size: 18, x: -160, y: 60, rot: -10, opacity: 0.18)
         }
-        .onAppear { withAnimation(.easeInOut(duration: 6).repeatForever(autoreverses: true)) { float = true } }
+        .accessibilityHidden(true)
+        .onChange(of: reduceMotion) { if $0 { float = false } }
+        .onAppear { if !reduceMotion { withAnimation(.easeInOut(duration: 6).repeatForever(autoreverses: true)) { float = true } } }
     }
     func decor(_ symbol: String, size: CGFloat, x: CGFloat, y: CGFloat, rot: Double, opacity: Double) -> some View {
         Image(systemName: symbol)
@@ -206,6 +250,7 @@ struct PartyButton: ButtonStyle {
     var fg: Color = .white
     var big: Bool = false
     @Environment(\.isEnabled) private var enabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     func makeBody(configuration: Configuration) -> some View {
         let pressed = configuration.isPressed
         configuration.label
@@ -228,7 +273,7 @@ struct PartyButton: ButtonStyle {
             .scaleEffect(pressed ? 0.97 : 1)
             .opacity(enabled ? 1 : 0.45)
             .grayscale(enabled ? 0 : 0.4)
-            .animation(.spring(response: 0.25, dampingFraction: 0.6), value: pressed)
+            .animation(reduceMotion ? nil : .spring(response: 0.25, dampingFraction: 0.6), value: pressed)
     }
 }
 
@@ -246,7 +291,8 @@ struct GameField: View {
     @Binding var text: String
     var big: Bool = false
     var body: some View {
-        TextField("", text: $text, prompt: Text(placeholder).foregroundColor(CT.inkSoft.opacity(0.7)))
+        TextField(placeholder, text: $text, prompt: Text(placeholder).foregroundColor(CT.inkSoft.opacity(0.7)))
+            .accessibilityLabel(placeholder)
             .font(CT.font(big ? 30 : 20, .bold))
             .foregroundColor(CT.ink)
             .tint(CT.magenta)
@@ -299,13 +345,13 @@ struct GameStepper: View {
         VStack(spacing: 10) {
             SectionLabel(text: label, icon: icon, color: accent)
             HStack(spacing: 14) {
-                roundBtn("minus", enabled: canDown, action: onDown)
+                roundBtn("minus", enabled: canDown, action: onDown).accessibilityLabel("Decrease \(label)")
                 Text(display)
                     .font(CT.font(30, .black))
                     .foregroundStyle(CT.ink)
                     .frame(maxWidth: .infinity)
                     .contentTransition(.numericText())
-                roundBtn("plus", enabled: canUp, action: onUp)
+                roundBtn("plus", enabled: canUp, action: onUp).accessibilityLabel("Increase \(label)")
             }
         }
     }
@@ -316,7 +362,7 @@ struct GameStepper: View {
             Image(systemName: symbol).font(CT.font(20, .black))
         }
         .buttonStyle(PartyButton(fill: enabled ? [accent, accent.opacity(0.8)] : [Color(white: 0.85)], fg: .white))
-        .frame(width: 56)
+        .frame(minWidth: 64, minHeight: 44)
         .disabled(!enabled)
     }
 }
@@ -341,6 +387,7 @@ struct TeamBadge: View {
 // MARK: - Logo header
 
 struct LogoHeader: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var subtitle: String = "THE ULTIMATE PARTY GAME"
     @State private var wiggle = false
     var body: some View {
@@ -370,7 +417,8 @@ struct LogoHeader: View {
                 .background(Capsule().fill(.white.opacity(0.12)))
         }
         .padding(.top, 8)
-        .onAppear { withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) { wiggle = true } }
+        .onChange(of: reduceMotion) { if $0 { wiggle = false } }
+        .onAppear { if !reduceMotion { withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) { wiggle = true } } }
     }
 }
 
@@ -403,6 +451,7 @@ struct FlowHeader: View {
 
 /// Animated splash / loading screen shown on launch.
 struct WelcomeView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let onDone: () -> Void
     @State private var progress: CGFloat = 0
     @State private var bounce = false
@@ -434,9 +483,10 @@ struct WelcomeView: View {
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task {
+            if reduceMotion { onDone(); return }
             withAnimation(.easeInOut(duration: 1.6)) { progress = 1 }
             withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { bounce = true }
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            do { try await Task.sleep(nanoseconds: 2_000_000_000) } catch { return }
             onDone()
         }
     }
@@ -454,6 +504,7 @@ struct EntryView: View {
             GamePanel(accent: CT.magenta) {
                 SectionLabel(text: "Your Name", icon: "person.fill", color: CT.magenta)
                 GameField(placeholder: "Enter your name…", text: $name)
+                Text("1–32 characters").font(CT.font(13, .medium)).foregroundStyle(CT.inkSoft)
 
                 SectionLabel(text: "Choose Mode", icon: "gamecontroller.fill", color: CT.magenta)
                 ModeSelector(mode: $mode)
@@ -462,13 +513,13 @@ struct EntryView: View {
                     .font(CT.font(14, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
 
                 Button {
-                    guard !name.trimmed.isEmpty else { return }
+                    guard InputRules.validName(name) else { return }
                     if mode == 0 { onHost() } else { onJoin() }
                 } label: {
                     Label(mode == 0 ? "CREATE ROOM" : "ENTER A CODE", systemImage: "arrow.right")
                 }
                 .buttonStyle(mode == 0 ? PartyButton.primary : PartyButton(fill: [CT.purple, CT.magenta]))
-                .disabled(name.trimmed.isEmpty)
+                .disabled(!InputRules.validName(name))
             }
         }
     }
@@ -476,6 +527,7 @@ struct EntryView: View {
 
 /// Room-code entry page for joiners; shows a searching state after submit.
 struct JoinCodeView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject var store: GameStore
     @Binding var name: String
     let onJoin: (String) -> Void
@@ -503,23 +555,23 @@ struct JoinCodeView: View {
                     GameField(placeholder: "ABCD", text: $code, big: true)
                         .textInputAutocapitalization(.characters)
                         .autocorrectionDisabled()
-                        .onChange(of: code) { code = String($0.uppercased().filter { $0.isLetter || $0.isNumber }.prefix(4)) }
+                        .onChange(of: code) { code = String($0.uppercased().filter { InputRules.roomAlphabet.contains($0) }.prefix(4)) }
                     Text("Ask the host for their 4-character room code.")
                         .font(CT.font(14, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
                     Button {
                         let c = code.trimmed.uppercased()
-                        guard !c.isEmpty else { return }
+                        guard InputRules.validRoomCode(c) else { return }
                         submitted = true
                         onJoin(c)
                     } label: {
                         Label("JOIN GAME", systemImage: "arrow.right.circle.fill")
                     }
                     .buttonStyle(PartyButton.primary)
-                    .disabled(code.trimmed.isEmpty)
+                    .disabled(!InputRules.validRoomCode(code.trimmed))
                 }
             }
         }
-        .onAppear { withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) { spin = true } }
+        .onAppear { if !reduceMotion { withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) { spin = true } } }
     }
 }
 
@@ -635,7 +687,7 @@ struct MyNameCard: View {
                     .onAppear { draft = p.name }
                 Button("SAVE NAME") { store.send(.renamePlayer(p.id, draft)) }
                     .buttonStyle(PartyButton.primary)
-                    .disabled(draft.trimmed.isEmpty)
+                    .disabled(!InputRules.validName(draft))
             }
         }
     }
@@ -677,6 +729,8 @@ struct HostSettings: View {
                         }
                     }
                     .buttonStyle(on ? PartyButton(fill: [CT.cyan, Color(red: 0.16, green: 0.6, blue: 0.85)]) : PartyButton.secondary)
+                    .disabled(!store.categoryAvailable(cat))
+                    .accessibilityHint(store.categoryAvailable(cat) ? "" : "No words in this theme")
                 }
             }
 
@@ -702,6 +756,7 @@ struct TeamsEditor: View {
             GameField(placeholder: "Team A name", text: $a).onAppear { a = store.teamName(.A) }
             GameField(placeholder: "Team B name", text: $b).onAppear { b = store.teamName(.B) }
             Button("SAVE NAMES") { store.send(.setTeamName(.A, a)); store.send(.setTeamName(.B, b)) }
+                .disabled(!InputRules.validName(a) || !InputRules.validName(b))
                 .buttonStyle(PartyButton.secondary)
             Text("Tap A / B to move a player. Need at least 2 players on each team.")
                 .font(CT.font(12, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
@@ -711,6 +766,7 @@ struct TeamsEditor: View {
 }
 
 struct StartCard: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject var store: GameStore
     @State private var pulse = false
     var body: some View {
@@ -725,12 +781,16 @@ struct StartCard: View {
                 Label("START GAME", systemImage: "play.fill")
             }
             .buttonStyle(PartyButton(fill: [CT.green, Color(red: 0.16, green: 0.68, blue: 0.42)], big: true))
-            .disabled(!ready)
+            .disabled(!ready || store.availableWords.isEmpty)
             .scaleEffect(ready && pulse ? 1.03 : 1.0)
-            .onAppear { if ready { withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true } } }
+            .onAppear { if ready && !reduceMotion { withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true } } }
             .onChange(of: ready) { newValue in
                 pulse = false
-                if newValue { withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true } }
+                if newValue && !reduceMotion { withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true } }
+            }
+            if store.availableWords.isEmpty {
+                Text("No words are available. Choose another theme or category.")
+                    .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft)
             }
             if !ready {
                 Text("Need at least 2 players on each team to start.")
@@ -745,7 +805,7 @@ struct TeamsList: View {
     let theme: GameTheme
     var editable = false
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
             ForEach(TeamId.allCases, id: \.self) { team in
                 VStack(spacing: 10) {
                     Label(store.teamName(team).uppercased(), systemImage: team == .A ? theme.teamAIcon : theme.teamBIcon)
@@ -771,6 +831,7 @@ struct PlayerRow: View {
     let player: Player
     let editable: Bool
     @State private var draft = ""
+    @State private var confirmingRemoval = false
     var body: some View {
         VStack(spacing: 8) {
             if editable {
@@ -778,9 +839,17 @@ struct PlayerRow: View {
                     .font(CT.font(14, .bold)).foregroundColor(CT.ink).colorScheme(.light)
                     .padding(8).background(RoundedRectangle(cornerRadius: 10).fill(.white)).onAppear { draft = player.name }
                 HStack(spacing: 6) {
-                    Button("A") { store.send(.setPlayerTeam(player.id, .A)) }.buttonStyle(MiniButton(color: CT.teamA.first!))
-                    Button("B") { store.send(.setPlayerTeam(player.id, .B)) }.buttonStyle(MiniButton(color: CT.teamB.first!))
-                    Button("SAVE") { store.send(.renamePlayer(player.id, draft)) }.buttonStyle(MiniButton(color: .white, fg: CT.ink))
+                    Button("A") { store.send(.setPlayerTeam(player.id, .A)) }.buttonStyle(MiniButton(color: CT.teamA.first!)).accessibilityLabel("Move \(player.name) to \(store.teamName(.A))")
+                    Button("B") { store.send(.setPlayerTeam(player.id, .B)) }.buttonStyle(MiniButton(color: CT.teamB.first!)).accessibilityLabel("Move \(player.name) to \(store.teamName(.B))")
+                    Button("SAVE") { store.send(.renamePlayer(player.id, draft)) }.buttonStyle(MiniButton(color: .white, fg: CT.ink)).disabled(!InputRules.validName(draft)).accessibilityLabel("Save name for \(player.name)")
+                }
+                if store.activePlayerId != player.id {
+                    Button("Remove player") { confirmingRemoval = true }
+                        .font(CT.font(14, .bold)).foregroundStyle(.white).frame(minHeight: 44)
+                        .accessibilityLabel("Remove \(player.name)")
+                        .confirmationDialog("Remove \(player.name) from the room?", isPresented: $confirmingRemoval, titleVisibility: .visible) {
+                            Button("Remove player", role: .destructive) { store.removePlayer(player.id) }
+                        }
                 }
             } else {
                 Text(player.name + (store.activePlayerId == player.id ? " • YOU" : ""))
@@ -800,6 +869,7 @@ struct MiniButton: ButtonStyle {
         configuration.label
             .font(CT.font(12, .black)).foregroundColor(fg)
             .padding(.vertical, 6).padding(.horizontal, 10)
+            .frame(minWidth: 44, minHeight: 44)
             .background(Capsule().fill(color))
             .scaleEffect(configuration.isPressed ? 0.92 : 1)
             .animation(.spring(response: 0.2, dampingFraction: 0.6), value: configuration.isPressed)
@@ -837,7 +907,7 @@ struct RoundView: View {
             switch store.state.round?.phase {
             case .roleReveal: RoleRevealView(theme: theme)
             case .awaitingClue: ClueView(theme: theme)
-            case .opposingDecision, .owningDecision: DecisionView(theme: theme)
+            case .opposingDecision, .owningDecision: DecisionView(theme: theme).id(store.state.round?.phase)
             case .roundOver: RoundOverView()
             default: EmptyView()
             }
@@ -875,25 +945,6 @@ struct HUDView: View {
     }
 }
 
-/// Animated "auto-continue" indicator shown where a manual button used to be.
-struct AutoAdvanceHint: View {
-    let text: String
-    @State private var on = false
-    var body: some View {
-        HStack(spacing: 8) {
-            ForEach(0..<3, id: \.self) { i in
-                Circle().fill(CT.magenta)
-                    .frame(width: 8, height: 8)
-                    .opacity(on ? 1 : 0.25)
-                    .scaleEffect(on ? 1 : 0.6)
-                    .animation(.easeInOut(duration: 0.55).repeatForever().delay(Double(i) * 0.16), value: on)
-            }
-            Text(text).font(CT.font(13, .black)).foregroundStyle(CT.inkSoft).kerning(1)
-        }
-        .onAppear { on = true }
-    }
-}
-
 struct RoleRevealView: View {
     @EnvironmentObject var store: GameStore
     let theme: GameTheme
@@ -917,13 +968,12 @@ struct RoleRevealView: View {
             } else {
                 Text("Waiting for your player…").font(CT.font(17, .bold)).foregroundStyle(CT.inkSoft)
             }
-            AutoAdvanceHint(text: "GET READY…")
-        }
-        .task {
-            // Host is authoritative: auto-advance after a beat so everyone can read their role.
-            guard store.isHost else { return }
-            try? await Task.sleep(nanoseconds: 3_500_000_000)
-            if store.state.round?.phase == .roleReveal { store.send(.allReady) }
+            if store.isHost {
+                Button("EVERYONE READY — START") { store.send(.allReady) }.buttonStyle(PartyButton.go)
+                Text("Check that everyone has read their role before continuing.").font(CT.font(15, .medium))
+            } else {
+                Text("Tell the host when you are ready.").font(CT.font(17, .bold))
+            }
         }
     }
 }
@@ -946,9 +996,10 @@ struct ClueView: View {
             Text("Hint giver: \(store.playerName(active))").font(CT.font(17, .bold)).foregroundStyle(CT.inkSoft)
             if isActive {
                 GameField(placeholder: "Type your one-word hint", text: $clue)
-                Button("SUBMIT HINT") { store.send(.clueGiven(clue)); clue = "" }
+                Button("SUBMIT HINT") { store.send(.clueGiven(clue)) }
                     .buttonStyle(PartyButton.primary)
-                    .disabled(clue.trimmed.isEmpty)
+                    .disabled(InputRules.clueError(clue, answers: [store.state.round?.signal ?? ""]) != nil)
+                Text("One word; no answer or close spelling. Hyphens and apostrophes are allowed.").font(CT.font(13, .medium))
             } else {
                 Text("Only \(store.playerName(active)) can submit the hint.")
                     .font(CT.font(15, .bold)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
@@ -990,6 +1041,11 @@ struct DecisionView: View {
         let receiverId = team.flatMap { store.team($0)?.receiverId }
         let canAct = store.activePlayerId == receiverId
         GamePanel(accent: canAct ? CT.green : CT.purple) {
+            if let hint = store.state.round?.history.last?.clueText {
+                SectionLabel(text: "Current hint", icon: "text.bubble.fill")
+                Text(hint).font(CT.font(30, .black)).accessibilityLabel("Current hint: \(hint)")
+            }
+            LastHintsView()
             if canAct {
                 Text("YOUR TURN TO GUESS").font(CT.font(28, .black)).foregroundStyle(CT.ink).multilineTextAlignment(.center)
                 Text("\(store.teamName(team ?? .A)) \(theme.receiver)".uppercased())
@@ -1002,7 +1058,7 @@ struct DecisionView: View {
                         .buttonStyle(PartyButton.secondary)
                     Button("LOCK GUESS") { confirming = true }
                         .buttonStyle(PartyButton.go)
-                        .disabled(guess.trimmed.isEmpty)
+                        .disabled(!InputRules.validGuess(guess))
                 }
             } else {
                 Image(systemName: "hourglass")
@@ -1033,13 +1089,11 @@ struct RoundOverView: View {
             Text("\(store.teamName(store.state.round?.winner ?? .A)) wins by \(store.state.round?.winReason == .lockout ? "lockout" : "correct guess")!")
                 .font(CT.font(17, .black)).foregroundStyle(CT.ink).multilineTextAlignment(.center)
             LastHintsView()
-            AutoAdvanceHint(text: "NEXT ROUND STARTING…")
-        }
-        .task {
-            // Host is authoritative: pause so players can see the result, then roll on.
-            guard store.isHost else { return }
-            try? await Task.sleep(nanoseconds: 4_500_000_000)
-            if store.state.status == .inRound, store.state.round?.phase == .roundOver { store.startOrNextRound() }
+            if store.isHost {
+                Button("NEXT ROUND") { store.startOrNextRound() }.buttonStyle(PartyButton.go)
+            } else {
+                Text("Waiting for the host to start the next round.").font(CT.font(17, .bold))
+            }
         }
     }
 }
@@ -1084,3 +1138,25 @@ struct MatchOverView: View {
 }
 
 private extension String { var trimmed: String { trimmingCharacters(in: .whitespacesAndNewlines) } }
+
+struct RulesView: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Play with 4–8 nearby phones, with at least two players on each team.")
+                    Text("One player hosts. Everyone else enters the host's room code and allows Local Network access. All phones need the same app version.")
+                    Text("Each round, one random player on each team guesses. Everyone else sees the same secret answer. Keep your phone hidden from the guessers.")
+                    Text("The active hint giver submits one word. Hyphens and apostrophes are allowed; the answer and close spellings are not. The other team's guesser acts first, then the hint giver's guesser. Either can pass without penalty.")
+                    Text("A correct guess wins the round. Each wrong guess adds one Static. Reaching the Static limit gives the round to the other team. Hints alternate between teams and rotate between hint givers.")
+                    Text("The first team to the configured number of round wins takes the match. The host starts each round after everyone has had time to read.")
+                    Text("If a player disconnects during a match, the match resets to the lobby. Rejoin, rebalance the teams, and start again. If the host leaves, everyone must join a new room.")
+                }
+                .font(.body).padding()
+            }
+            .navigationTitle("How to play")
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+        }
+    }
+}

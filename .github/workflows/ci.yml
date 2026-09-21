@@ -1,0 +1,15 @@
+name: Build and test
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  ios:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rule engine regression tests
+        run: swift test
+      - name: iPhone simulator build and integration tests
+        run: ./scripts/test-ios.sh

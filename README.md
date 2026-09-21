@@ -1,33 +1,49 @@
 # Crosstalk
 
-Native iPhone party word game based on `crosstalk-gdd.md`.
+A native SwiftUI iPhone party word game for 4–8 nearby players, using MultipeerConnectivity. Each player needs their own phone. No account or internet connection is required for play.
 
-## Build
+## Build and run
 
-Open `Crosstalk.xcodeproj` in Xcode 16+, select an iPhone 8-or-newer simulator/device, and run.
+Open `Crosstalk.xcodeproj` in Xcode 16+, select the shared **Crosstalk** scheme, and run on an iPhone or simulator. The deployment target is iOS 16.0; iPhone 8 and newer are supported. For physical devices, select your development team under Signing & Capabilities. The bundle ID is `com.riverdevprojects.crosstalk`.
 
-- Deployment target: iOS 16.0 (iPhone 8 supported)
-- Bundle id: `com.riverdevprojects.crosstalk`
-- Native SwiftUI app, no web wrapper
+Allow Local Network access when prompted. Keep Wi‑Fi and Bluetooth enabled and the phones nearby. All players must run the same app version: the current multiplayer protocol is version 2 and rejects older clients.
 
-## Included
+## Play
 
-- Pure Swift rule engine and deterministic guess matcher
-- Nearby phone-to-phone multiplayer using MultipeerConnectivity (Bluetooth / peer-to-peer Wi‑Fi / local Wi‑Fi)
-- Paged flow: welcome/loading, name + host/join, dedicated host and join pages
-- Host/join by room code: the host gets a 4-character code others type in to join
-- Keeps the phone awake while the app is open
-- Theme-specific team backgrounds and role names
-- Host chooses the theme and category (no captains, no voting)
-- Host-only settings/team/player controls
-- Each round randomly picks the guessing player (the one who doesn't know the word) on each team
-- Custom team names and editable player names
-- Written hint submission and hint history
-- Typed guesses with confirmation
-- Native lobby/player setup
-- Team assignment, transmitter rotation, alternating openers
-- Role reveal, clue, ordered receiver decision, round over, match over screens
-- Static announcements and confirmation before spending a guess
-- JSON word pack loaded at startup
+1. Enter a name (1–32 characters). One player creates a room; everyone else enters its four-character code.
+2. The host chooses a theme, an available category, match length, and Static limit. Each team needs at least two players.
+3. Each round randomly chooses a guesser on each team. The other players see the secret answer. Keep those screens private.
+4. The host checks that everyone has read their role, then starts. The active hint giver submits one word. The opposing guesser acts first, followed by the hint giver's team. Passing costs nothing.
+5. A correct guess wins the round. An incorrect guess adds a Static; reaching the limit awards the round to the other team. After both guessers act, hint giving switches teams and rotates between that team's hint givers.
+6. The host starts the next round when everyone is ready. The first team to the selected number of round wins wins the match.
 
-This build is native and locally networked for in-person play. The host phone is authoritative and broadcasts state to joined phones.
+The **How to play** button is available throughout the app. See [game rules](docs/RULES.md) for clue and answer matching details.
+
+## Connection and recovery behavior
+
+- Joining times out after 20 seconds and offers retry. If discovery fails, check the room code and Local Network access under iOS Settings.
+- Players can leave from the lobby or during play. If someone leaves/disconnects during a match, the host resets the match to the lobby and removes that player. Scores are reset deliberately so missing roles cannot strand a turn. Rejoin, rebalance teams, and start again.
+- If the host leaves or the host connection is lost, guests see a recovery screen. There is no host migration or saved-match recovery.
+- New players join only in the lobby. The maximum room size is eight phones including the host.
+- The host validates sender identity, role, phase, and snapshot revision before applying guest actions. Receiver snapshots exclude the secret signal, answer aliases, and used-word list. The host remains trusted because it runs the authoritative engine locally.
+- Word selection stays within the chosen theme and category. Empty categories are disabled. Exhaustion produces an explicit message instead of silently changing category. Returning to the lobby resets the match and its used-word list.
+
+## Tests
+
+Run the Foundation-only rule and permission tests on macOS:
+
+```sh
+swift test
+```
+
+Run the same tests plus iOS store/network-message integration tests on an available simulator:
+
+```sh
+./scripts/test-ios.sh
+```
+
+GitHub Actions runs both suites on pushes and pull requests. Tests cover phase transitions, scoring, lockouts, rotation, input limits, permissions, stale messages, disconnect/rejoin, snapshot privacy, and category exhaustion. A simulator does not replace a physical multi-phone playtest; see [release checks](docs/TESTING.md).
+
+## Assets
+
+The app icon uses the existing signal motif and party palette. Regenerate all required sizes on macOS with `swift scripts/generate-icon.swift`. Word content is in `Crosstalk/Resources/party-core.json`.
