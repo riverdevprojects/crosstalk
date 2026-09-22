@@ -6,9 +6,9 @@ import XCTest
 #endif
 
 final class GameTests: XCTestCase {
-    let word = WordEntry(signal: "rocket", accepted: ["space rocket"], difficulty: 1, category: "Objects", theme: "space")
+    let word = WordEntry(signal: "rocket", accepted: ["space rocket"], difficulty: 1, theme: "space")
     func lobby() -> GameState {
-        var state = GameState()
+        var state = GameState(); state.config.themeId = "space"
         for name in ["Alex", "Blair", "Casey", "Drew", "Eli", "Fran"] { GameEngine.reduce(&state, .addPlayer(name)) }
         return state
     }
@@ -24,7 +24,7 @@ final class GameTests: XCTestCase {
         return state
     }
     func testRequiresTwoPlayersPerTeam() {
-        var state = GameState()
+        var state = GameState(); state.config.themeId = "space"
         for name in ["Alex", "Blair", "Casey"] { GameEngine.reduce(&state, .addPlayer(name)) }
         GameEngine.reduce(&state, .startRound(word))
         XCTAssertEqual(state.status, .lobby)
@@ -40,7 +40,7 @@ final class GameTests: XCTestCase {
     }
     func testCannotStartOverAnActiveRound() {
         var state = round(); let before = state
-        GameEngine.reduce(&state, .startRound(WordEntry(signal: "moon", accepted: [], difficulty: 1, category: nil, theme: nil)))
+        GameEngine.reduce(&state, .startRound(WordEntry(signal: "moon", accepted: [], difficulty: 1, theme: "space")))
         GameEngine.reduce(&state, .nextRound(word))
         XCTAssertEqual(state, before)
     }
@@ -92,7 +92,7 @@ final class GameTests: XCTestCase {
     func testNextRoundKeepsScoresAndAlternatesOpener() {
         var state = decision()
         GameEngine.reduce(&state, .receiverGuess(.B, "rocket"))
-        GameEngine.reduce(&state, .nextRound(WordEntry(signal: "moon", accepted: [], difficulty: 1, category: nil, theme: nil)))
+        GameEngine.reduce(&state, .nextRound(WordEntry(signal: "moon", accepted: [], difficulty: 1, theme: "space")))
         XCTAssertEqual(state.roundNumber, 2)
         XCTAssertEqual(state.round?.clueingTeam, .B)
         XCTAssertEqual(state.teams[.B]?.score, 1)
@@ -185,19 +185,34 @@ final class GameTests: XCTestCase {
         GameEngine.reduce(&state, .receiverGuess(.B, "rocket"))
         XCTAssertEqual(state.visible(to: state.teams[.B]!.receiverId).round?.signal, "rocket")
     }
-    func testWordSelectionNeverFallsBackToWrongCategory() {
+    func testThemeIsTheOnlyWordFilterAndNeverFallsBack() {
         let pack = WordPack(id: "test", name: "Test", words: [word])
-        var state = lobby(); state.config.themeId = "space"; state.config.category = "Food"
+        var state = lobby(); state.config.themeId = "food"
         XCTAssertTrue(WordSelection.available(in: pack, state: state).isEmpty)
-        state.config.category = "Objects"
+        state.config.themeId = "space"
         XCTAssertEqual(WordSelection.available(in: pack, state: state), [word])
         state.usedSignals.insert(word.signal)
         XCTAssertTrue(WordSelection.available(in: pack, state: state).isEmpty)
     }
-    func testThemeChangeResetsCategoryAndInputsAreBounded() {
-        var state = lobby(); state.config.category = "Food"
-        GameEngine.reduce(&state, .setTheme("space"))
-        XCTAssertEqual(state.config.category, "Everything")
+    func testShortOrDuplicatePoolsCannotPromiseACompleteMatch() {
+        var config = GameConfig(); config.themeId = "space"; config.roundsToWin = 4
+        let duplicates = WordPack(id: "test", name: "Test", words: Array(repeating: word, count: 7))
+        XCTAssertFalse(WordSelection.canCompleteMatch(in: duplicates, config: config))
+        let unique = (0..<7).map { WordEntry(signal: "word\($0)", accepted: [], difficulty: 1, theme: "space") }
+        XCTAssertTrue(WordSelection.canCompleteMatch(in: WordPack(id: "test", name: "Test", words: unique), config: config))
+    }
+    func testCannotStartWithWordFromAnotherTheme() {
+        var state = lobby(); state.config.themeId = "food"
+        let before = state
+        GameEngine.reduce(&state, .startRound(word))
+        XCTAssertEqual(state, before)
+    }
+    func testThemeChangeAndInputsAreBounded() {
+        var state = lobby()
+        GameEngine.reduce(&state, .setTheme("food"))
+        XCTAssertEqual(state.config.themeId, "food")
+        GameEngine.reduce(&state, .setTheme("unknown"))
+        XCTAssertEqual(state.config.themeId, "food")
         XCTAssertTrue(InputRules.validRoomCode("AB23"))
         for code in ["ABC", "ABCDE", "AB0O", "abcd", "１２３４"] { XCTAssertFalse(InputRules.validRoomCode(code)) }
         for name in [" ", String(repeating: "a", count: 33), "a\nb"] { XCTAssertFalse(InputRules.validName(name)) }

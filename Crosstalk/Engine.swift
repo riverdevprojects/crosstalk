@@ -1,6 +1,6 @@
 import Foundation
 
-enum GameAction: Codable { case addPlayer(String), upsertPlayer(Player), renamePlayer(String, String), setPlayerTeam(String, TeamId), setLobbyPlayers([Player]), removePlayer(String), assignTeams, setTeamName(TeamId, String), setTheme(String), setCategory(String), setRoundsToWin(Int), setMaxStatics(Int), startRound(WordEntry), allReady, clueGiven(String), receiverPass(TeamId), receiverGuess(TeamId, String), nextRound(WordEntry), reset }
+enum GameAction: Codable { case addPlayer(String), upsertPlayer(Player), renamePlayer(String, String), setPlayerTeam(String, TeamId), setLobbyPlayers([Player]), removePlayer(String), assignTeams, setTeamName(TeamId, String), setTheme(String), setRoundsToWin(Int), setMaxStatics(Int), startRound(WordEntry), allReady, clueGiven(String), receiverPass(TeamId), receiverGuess(TeamId, String), nextRound(WordEntry), reset }
 
 enum GuessMatcher {
     static func normalize(_ input: String) -> String {
@@ -50,7 +50,7 @@ struct GameEngine {
         // The reducer also checks phases: authorization alone cannot prevent stale actions.
         switch action {
         case .addPlayer, .upsertPlayer, .renamePlayer, .setPlayerTeam, .setLobbyPlayers,
-             .removePlayer, .assignTeams, .setTeamName, .setTheme, .setCategory,
+             .removePlayer, .assignTeams, .setTeamName, .setTheme,
              .setRoundsToWin, .setMaxStatics:
             guard state.status == .lobby else { return }
         case .startRound:
@@ -78,9 +78,8 @@ struct GameEngine {
         case .assignTeams: for i in state.players.indices { state.players[i].team = i % 2 == 0 ? .A : .B }
         case .setTeamName(let team, let name): guard InputRules.validName(name) else { return }; state.config.teamNames[team] = name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Team \(team.rawValue)" : name
         case .setTheme(let themeId):
-            guard ["signal", "medieval", "space", "pirates"].contains(themeId) else { return }; state.config.themeId = themeId; state.config.category = "Everything"
-        case .setCategory(let category):
-            guard ["Everything", "Animals", "Food", "Places", "Objects"].contains(category) else { return }; state.config.category = category
+            guard ThemeDefinition.all.contains(where: { $0.id == themeId }) else { return }
+            state.config.themeId = themeId
         case .setRoundsToWin(let rounds): state.config.roundsToWin = min(max(rounds, 2), 4)
         case .setMaxStatics(let statics): state.config.maxStatics = min(max(statics, 2), 3)
         case .startRound(let word), .nextRound(let word): start(&state, word)
@@ -104,7 +103,7 @@ struct GameEngine {
         }
     }
     private static func start(_ state: inout GameState, _ word: WordEntry) {
-        guard !word.signal.isEmpty, !state.usedSignals.contains(word.signal) else { return }
+        guard word.theme == state.config.themeId, !word.signal.isEmpty, !state.usedSignals.contains(word.signal) else { return }
         let a = state.players.filter{$0.team == .A}, b = state.players.filter{$0.team == .B}; guard a.count >= 2 && b.count >= 2 else { return }
         state.notice = nil
         state.roundNumber += 1; state.status = .inRound; state.usedSignals.insert(word.signal)

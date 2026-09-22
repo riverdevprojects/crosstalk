@@ -2,7 +2,7 @@
 
 ## Roles and turns
 
-Play with 4–8 people on two teams, with at least two people per team. Each person uses their own iPhone. The host also plays. One random player per team is the receiver (guesser); other players are transmitters (hint givers). Theme names change the role labels, not the rules.
+Play with 4–8 people on two teams, with at least two people per team. Each person uses their own iPhone. The host also plays. One random player per team is the receiver (guesser); other players are transmitters (hint givers). The host chooses one of six themes. That choice sets the secret-word pool and illustrated background for everyone. Roles are always called guesser and hint giver; the rules stay the same.
 
 Both teams share one secret answer each round. Only hint givers see it during play. Teams alternate opening rounds. Within a round, hint giving alternates teams; each team's transmitters rotate in roster order.
 
@@ -19,5 +19,7 @@ A pass costs nothing. A wrong guess adds one Static. Reaching the configured lim
 ## Pacing and interruptions
 
 The host checks verbally that everyone is ready before starting the clue phase and controls when the next round starts. Anyone may leave; the host may return the group to the lobby. A player disconnecting during a match resets scores and returns the remaining group to the lobby. Missing roles are never automatically reassigned mid-round, because that could reveal the answer to a new guesser.
+
+Temporary send failures keep the game visible. The host retries unacknowledged state updates, and Sync game requests or resends the latest state. Guesses and passes are never automatically replayed. The final match screen reveals the last answer and guess before a new match.
 
 There are no automatic timers, host migration, or saved matches. Restarting the app requires joining/creating a room again.

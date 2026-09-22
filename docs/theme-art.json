@@ -1,0 +1,36 @@
+{
+  "generator": "OpenAI built-in image_gen tool",
+  "created": "2026-09-22",
+  "assets": [
+    {
+      "name": "ThemeCastle",
+      "file": "Crosstalk/Assets.xcassets/ThemeCastle.imageset/background.png",
+      "prompt": "Use case: stylized-concept. Asset type: full-bleed portrait iPhone background for a friendly party word game, 1024x1536. Create a polished playful illustrated fantasy castle world: a winding stone bridge leading to a grand storybook castle with many towers, banners, distant mountains and a small dragon silhouette high in the sky. Warm sunset, lavender sky and deep indigo foreground, painterly shapes and rich layered depth, tasteful all-ages adventure illustration. Castle focal point in upper third; foreground details along bottom and edges; calm middle area for opaque game UI panels. No text, letters, logos, UI, frames, watermarks, or characters close to camera. Artwork only, edge to edge."
+    },
+    {
+      "name": "ThemeSpace",
+      "file": "Crosstalk/Assets.xcassets/ThemeSpace.imageset/background.png",
+      "prompt": "Use case: stylized-concept. Asset type: full-bleed portrait iPhone background for a friendly party word game, 1024x1536. Create a polished playful illustration of a wondrous space observatory on a small moon, a sleek rocket at one edge, sweeping rings of an enormous planet above, tiny stars and a distant nebula. Midnight blue, luminous teal and coral. Painterly shapes and rich layered depth, tasteful all-ages adventure illustration, cohesive storybook game art. Main focal point in upper third; foreground details along bottom and edges; calm middle area for opaque game UI panels. No text, letters, readable signs, logos, UI, frames, watermarks, or characters close to camera. Artwork only, edge to edge."
+    },
+    {
+      "name": "ThemePirates",
+      "file": "Crosstalk/Assets.xcassets/ThemePirates.imageset/background.png",
+      "prompt": "Use case: stylized-concept. Asset type: full-bleed portrait iPhone background for a friendly party word game, 1024x1536. Create a polished playful illustration of a majestic wooden pirate sailing ship anchored in a tropical cove, cliffs and palms framing turquoise water, distant hidden island and warm sunset. Deep ocean blue, turquoise and amber. Painterly shapes and rich layered depth, tasteful all-ages adventure illustration, cohesive storybook game art. Main focal point in upper third; foreground details along bottom and edges; calm middle area for opaque game UI panels. No text, letters, readable signs, logos, UI, frames, watermarks, or characters close to camera. Artwork only, edge to edge."
+    },
+    {
+      "name": "ThemeWildlife",
+      "file": "Crosstalk/Assets.xcassets/ThemeWildlife.imageset/background.png",
+      "prompt": "Use case: stylized-concept. Asset type: full-bleed portrait iPhone background for a friendly party word game, 1024x1536. Create a polished playful illustration of a lush wildlife sanctuary with a distant waterfall, layered jungle canopy, elephant and giraffe silhouettes near the water far below, birds above. Forest green, jade and golden sunlight. Painterly shapes and rich layered depth, tasteful all-ages adventure illustration, cohesive storybook game art. Main focal point in upper third; foreground details along bottom and edges; calm middle area for opaque game UI panels. No text, letters, readable signs, logos, UI, frames, watermarks, or characters close to camera. Artwork only, edge to edge."
+    },
+    {
+      "name": "ThemeFood",
+      "file": "Crosstalk/Assets.xcassets/ThemeFood.imageset/background.png",
+      "prompt": "Use case: stylized-concept. Asset type: full-bleed portrait iPhone background for a friendly party word game, 1024x1536. Create a polished playful illustration of a delightful open-air food market on a cobblestone lane, striped awnings and bakery windows, baskets of bread and colorful produce along the lower edges, little cafe tables. Warm terracotta, berry red and cream. Painterly shapes and rich layered depth, tasteful all-ages adventure illustration, cohesive storybook game art. Main focal point in upper third; foreground details along bottom and edges; calm middle area for opaque game UI panels. No text, letters, readable signs, logos, UI, frames, watermarks, or characters close to camera. Artwork only, edge to edge."
+    },
+    {
+      "name": "ThemeCity",
+      "file": "Crosstalk/Assets.xcassets/ThemeCity.imageset/background.png",
+      "prompt": "Use case: stylized-concept. Asset type: full-bleed portrait iPhone background, 1024x1536, for City Lights theme in a party word game. A playful illustrated MODERN metropolis at blue hour, towering contemporary glass skyscrapers and art-deco high rises glowing with office windows in the upper third, elevated subway train, yellow taxis far down a broad avenue, a small urban pocket park and fire escape at the lower edges. Painterly polished game artwork, layered depth, cobalt blue and warm amber. Street-level perspective looking up the avenue. Calm lower-middle space for opaque UI panels. Clearly contemporary urban city. NO castles, cathedrals, medieval buildings, fantasy palaces, European villages, text, signage, logos, watermarks or UI. Edge to edge artwork only."
+    }
+  ]
+}

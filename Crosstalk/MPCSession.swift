@@ -1,21 +1,48 @@
 import Foundation
+import Combine
 import MultipeerConnectivity
 import UIKit
 
 private let serviceType = "ctalk-game"
-private let protocolVersion = "2"
+private let protocolVersion = "3"
 
 enum NetworkMessage: Codable {
     case hello(Player)
     case action(GameAction, revision: Int)
     case state(GameState)
+    case acknowledge(revision: Int)
+    case requestState
     case error(String)
     case leave
     case removed(String)
 }
 
+// The store can exercise delivery failures without a live radio connection.
 @MainActor
-final class MPCSession: NSObject, ObservableObject {
+protocol RoomNetwork: ObservableObject where ObjectWillChangePublisher == ObservableObjectPublisher {
+    var mode: NetworkMode { get }
+    var connectedNames: [String] { get }
+    var connectedPeers: [MCPeerID] { get }
+    var statusText: String { get }
+    var roomCode: String { get }
+    var connectionError: String? { get }
+    func isHostPeer(_ peer: MCPeerID) -> Bool
+    func configure(onMessage: @escaping (NetworkMessage, MCPeerID) -> Void,
+                   onDisconnect: @escaping (MCPeerID) -> Void)
+    func host(code: String)
+    func join(player: Player, code: String)
+    func joined()
+    func failJoin(_ message: String)
+    func stop()
+    @discardableResult func send(_ message: NetworkMessage, to peer: MCPeerID?) -> Bool
+}
+
+extension RoomNetwork {
+    @discardableResult func send(_ message: NetworkMessage) -> Bool { send(message, to: nil) }
+}
+
+@MainActor
+final class MPCSession: NSObject, RoomNetwork {
     @Published var mode: NetworkMode = .offline
     @Published var connectedNames: [String] = []
     @Published var statusText = "Not connected"
@@ -126,7 +153,8 @@ final class MPCSession: NSObject, ObservableObject {
             try session.send(JSONEncoder().encode(message), toPeers: peers, with: .reliable)
             return true
         } catch {
-            connectionError = "Could not send the update. Check the connection and retry."
+            // A transient send error must not replace the game with a fatal room screen.
+            // GameStore owns retry, acknowledgement, and non-blocking feedback.
             return false
         }
     }
