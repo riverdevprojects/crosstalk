@@ -1,527 +1,1846 @@
 {
   "id": "party-core",
-  "name": "Party Core",
+  "name": "Crosstalk Worlds",
   "words": [
-    {
-      "signal": "airplane",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "apple",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "apron",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "backpack",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "balloon",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "banana",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "barn",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "basket",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "bathtub",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "beach",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "bear",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "beehive",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "bicycle",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "blanket",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "blender",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "book",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "bridge",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "broom",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "bucket",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "burger",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "butterfly",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "cactus",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "camera",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "candle",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "canoe",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "carrot",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
     {
       "signal": "castle",
       "accepted": [],
-      "difficulty": 3,
-      "category": "Places",
-      "theme": "signal"
+      "difficulty": 1,
+      "theme": "medieval"
     },
     {
-      "signal": "cat",
+      "signal": "dragon",
       "accepted": [],
       "difficulty": 1,
-      "category": "Animals",
-      "theme": "signal"
+      "theme": "medieval"
     },
     {
-      "signal": "cereal",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "chair",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "chalk",
+      "signal": "knight",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "medieval"
     },
     {
-      "signal": "cheese",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "cherry",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "clock",
+      "signal": "wizard",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "medieval"
     },
     {
-      "signal": "cloud",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "coconut",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "compass",
+      "signal": "witch",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "cookie",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "couch",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "cowboy",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "crab",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "crayon",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "medieval"
     },
     {
       "signal": "crown",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "medieval"
     },
     {
-      "signal": "cupcake",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "curtain",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "dinosaur",
+      "signal": "throne",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "medieval"
     },
     {
-      "signal": "dog",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "dolphin",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "donut",
+      "signal": "sword",
       "accepted": [],
       "difficulty": 1,
-      "category": "Food",
-      "theme": "signal"
+      "theme": "medieval"
     },
     {
-      "signal": "door",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "dragon",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "drum",
+      "signal": "shield",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "medieval"
     },
     {
-      "signal": "duck",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "eagle",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "earmuffs",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "elephant",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "envelope",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "feather",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "fence",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "fire truck",
+      "signal": "armor",
       "accepted": [
-        "fire truck",
-        "fire-truck"
+        "armour"
       ],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
+      "difficulty": 1,
+      "theme": "medieval"
     },
     {
-      "signal": "flashlight",
+      "signal": "helmet",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "medieval"
     },
     {
-      "signal": "flower",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "football",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "fork",
+      "signal": "dungeon",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "medieval"
     },
     {
-      "signal": "fountain",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "frog",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "garden",
+      "signal": "drawbridge",
       "accepted": [],
       "difficulty": 1,
-      "category": "Places",
-      "theme": "signal"
+      "theme": "medieval"
     },
     {
-      "signal": "guitar",
+      "signal": "moat",
       "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
+      "difficulty": 1,
+      "theme": "medieval"
     },
     {
-      "signal": "hammer",
+      "signal": "tower",
       "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "king",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "queen",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "prince",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "princess",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "jester",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "archer",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "bow",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "arrow",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "horse",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "falcon",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "unicorn",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "griffin",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "goblin",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "troll",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "giant",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "fairy",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "elf",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "dwarf",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "ogre",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "mermaid",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "spell",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "potion",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "wand",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "crystal",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "scroll",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "rune",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "quest",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "tavern",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "blacksmith",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "anvil",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "forge",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "catapult",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "banner",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "scepter",
+      "accepted": [
+        "sceptre"
+      ],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "royal banquet",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "enchanted forest",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "magic mirror",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "gargoyle",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "labyrinth",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "goblet",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "torch",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "chainmail",
+      "accepted": [
+        "chain mail"
+      ],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "crossbow",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "siege",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "royal carriage",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "centaur",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "phoenix",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "dragon egg",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "spellbook",
+      "accepted": [
+        "spell book"
+      ],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "cauldron",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "joust",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "minotaur",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "sorcerer",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "citadel",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "peasant",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "medieval"
+    },
+    {
+      "signal": "rocket",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "astronaut",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "planet",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "moon",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "star",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "comet",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "asteroid",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "meteor",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "galaxy",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "nebula",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "black hole",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "supernova",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "satellite",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "space station",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "spacesuit",
+      "accepted": [
+        "space suit"
+      ],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "telescope",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "observatory",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "rover",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "alien",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "UFO",
+      "accepted": [
+        "unidentified flying object"
+      ],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "flying saucer",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Mars",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Jupiter",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Saturn",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Venus",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Mercury",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Neptune",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Uranus",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Earth",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Sun",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Pluto",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "orbit",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "gravity",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "eclipse",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "constellation",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Milky Way",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "solar system",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "launchpad",
+      "accepted": [
+        "launch pad"
+      ],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "countdown",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "mission control",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "lunar crater",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "moonwalk",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "space shuttle",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "airlock",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "oxygen tank",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "solar panel",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "space probe",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "wormhole",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "light year",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "shooting star",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Big Dipper",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "North Star",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "Andromeda",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "pulsar",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "quasar",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "red giant",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "white dwarf",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "solar flare",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "cosmic dust",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "space capsule",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "zero gravity",
+      "accepted": [
+        "weightlessness"
+      ],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "docking",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "heat shield",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "lunar lander",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "moon rock",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "stardust",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "twin suns",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "ringed planet",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "extraterrestrial",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "spacewalk",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "space"
+    },
+    {
+      "signal": "pirate",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "captain",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "parrot",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "kraken",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "treasure",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "treasure map",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "treasure chest",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "gold coin",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "island",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "harbor",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "lagoon",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "reef",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "beach",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "ship",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "sail",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "mast",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "anchor",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "compass",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "telescope",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "cannon",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "cannonball",
+      "accepted": [
+        "cannon ball"
+      ],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "cutlass",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "dagger",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "eyepatch",
+      "accepted": [
+        "eye patch"
+      ],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "hook",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "peg leg",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "bandana",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "skull",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "crossbones",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "plank",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "crow's nest",
+      "accepted": [
+        "crows nest"
+      ],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "shipwreck",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "bottle",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "message in a bottle",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "barrel",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "rope",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "knot",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "deck",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "cabin",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
     },
     {
       "signal": "hammock",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "pirates"
     },
     {
-      "signal": "hamburger",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "helmet",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "honey",
+      "signal": "lifeboat",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "pirates"
     },
     {
-      "signal": "horse",
+      "signal": "rowboat",
       "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "oar",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "galleon",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "schooner",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "buccaneer",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "mutiny",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "stowaway",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "sea shanty",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "mermaid",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "siren",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "octopus",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "shark",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "whirlpool",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "storm",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "tidal wave",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "lighthouse",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "seashell",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "pearl",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "coral",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "coconut",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "palm tree",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "sandbar",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "cove",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "spyglass",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "doubloon",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "skeleton",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "tricorn hat",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "fishing net",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "sea monster",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "pirates"
+    },
+    {
+      "signal": "elephant",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "giraffe",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "lion",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "tiger",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "leopard",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "cheetah",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "zebra",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "rhinoceros",
+      "accepted": [
+        "rhino"
+      ],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "hippopotamus",
+      "accepted": [
+        "hippo"
+      ],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "gorilla",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "chimpanzee",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "orangutan",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "monkey",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "panda",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "koala",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "kangaroo",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "wombat",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "sloth",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "anteater",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "armadillo",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "otter",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "beaver",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "fox",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "wolf",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "bear",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "deer",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "moose",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "bison",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "camel",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "llama",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "rabbit",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "hedgehog",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "squirrel",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "raccoon",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "skunk",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "bat",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "eagle",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "owl",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "flamingo",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "penguin",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "peacock",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "toucan",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "hummingbird",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "ostrich",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "crocodile",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "alligator",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "chameleon",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "iguana",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "tortoise",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "frog",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "salamander",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "snake",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "butterfly",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "dragonfly",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "bee",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "beetle",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "ladybug",
+      "accepted": [
+        "ladybird"
+      ],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "spider",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "scorpion",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "ant",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "whale",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "dolphin",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "seal",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "walrus",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "jellyfish",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "stingray",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "seahorse",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "starfish",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "rainforest",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "savanna",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "wildlife"
+    },
+    {
+      "signal": "pizza",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "burger",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "taco",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "burrito",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "sushi",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "ramen",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "noodles",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "spaghetti",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "lasagna",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "dumpling",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "curry",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "rice",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "bread",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "bagel",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "croissant",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "pretzel",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "pancake",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "waffle",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "omelet",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "bacon",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "sausage",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "sandwich",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
     },
     {
       "signal": "hot dog",
@@ -529,16 +1848,246 @@
         "hot dog",
         "hot-dog"
       ],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
+      "difficulty": 1,
+      "theme": "food"
     },
     {
-      "signal": "house",
+      "signal": "french fries",
+      "accepted": [
+        "fries"
+      ],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "salad",
       "accepted": [],
       "difficulty": 1,
-      "category": "Places",
-      "theme": "signal"
+      "theme": "food"
+    },
+    {
+      "signal": "soup",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "cheese",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "butter",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "yogurt",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "milk",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "egg",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "apple",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "banana",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "orange",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "lemon",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "lime",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "strawberry",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "blueberry",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "raspberry",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "watermelon",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "pineapple",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "mango",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "peach",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "pear",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "cherry",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "grape",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "avocado",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "tomato",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "potato",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "carrot",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "broccoli",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "mushroom",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "corn",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "onion",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "garlic",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "popcorn",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "peanut butter",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "chocolate",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "cookie",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "brownie",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "cupcake",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "doughnut",
+      "accepted": [
+        "donut"
+      ],
+      "difficulty": 1,
+      "theme": "food"
     },
     {
       "signal": "ice cream",
@@ -546,1843 +2095,476 @@
         "ice cream",
         "ice-cream"
       ],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
+      "difficulty": 1,
+      "theme": "food"
     },
     {
-      "signal": "island",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "jacket",
+      "signal": "popsicle",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "food"
     },
     {
-      "signal": "jellyfish",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "kite",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "ladder",
+      "signal": "cheesecake",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "food"
     },
     {
-      "signal": "lamp",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "lantern",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "lemon",
+      "signal": "pumpkin pie",
       "accepted": [],
       "difficulty": 1,
-      "category": "Food",
-      "theme": "signal"
+      "theme": "food"
     },
     {
-      "signal": "lighthouse",
+      "signal": "honey",
       "accepted": [],
-      "difficulty": 2,
-      "category": "Places",
-      "theme": "signal"
+      "difficulty": 1,
+      "theme": "food"
     },
     {
-      "signal": "lion",
+      "signal": "coffee",
       "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "tea",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "smoothie",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "food"
+    },
+    {
+      "signal": "skyscraper",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "apartment",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "elevator",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "escalator",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "staircase",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "rooftop",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "balcony",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "fire escape",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "sidewalk",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "crosswalk",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "traffic light",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "stop sign",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "streetlamp",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "parking meter",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "taxi",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "bus",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "tram",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "subway",
+      "accepted": [
+        "metro"
+      ],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "bicycle",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "scooter",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "motorcycle",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "ambulance",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "fire engine",
+      "accepted": [
+        "fire truck"
+      ],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "police car",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "delivery truck",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "train station",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "bus stop",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "airport",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "bridge",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "tunnel",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "roundabout",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "intersection",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "traffic jam",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "construction crane",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "pothole",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "manhole",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "fire hydrant",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
     },
     {
       "signal": "mailbox",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "city"
     },
     {
-      "signal": "map",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "microphone",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "mirror",
+      "signal": "newspaper",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "city"
     },
     {
-      "signal": "monkey",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "moon",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "mountain",
+      "signal": "billboard",
       "accepted": [],
       "difficulty": 1,
-      "category": "Places",
-      "theme": "signal"
+      "theme": "city"
     },
     {
-      "signal": "mushroom",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "necklace",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "notebook",
+      "signal": "fountain",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "city"
     },
     {
-      "signal": "octopus",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "orange",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "pancake",
+      "signal": "park",
       "accepted": [],
       "difficulty": 1,
-      "category": "Food",
-      "theme": "signal"
+      "theme": "city"
     },
     {
-      "signal": "pencil",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "penguin",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "piano",
+      "signal": "playground",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "city"
     },
     {
-      "signal": "pickle",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "pillow",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "pirate",
+      "signal": "skatepark",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "city"
     },
     {
-      "signal": "pizza",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "popcorn",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "pumpkin",
+      "signal": "basketball court",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "city"
     },
     {
-      "signal": "puzzle",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "rabbit",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "rainbow",
+      "signal": "stadium",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "city"
     },
     {
-      "signal": "rocket",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "sandwich",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "scarf",
+      "signal": "museum",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
+      "theme": "city"
+    },
+    {
+      "signal": "library",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "theater",
+      "accepted": [
+        "theatre"
+      ],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "cinema",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "concert",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "art gallery",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "bookstore",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "bakery",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "cafe",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "restaurant",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "supermarket",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "flower shop",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "barbershop",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "laundromat",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
+    },
+    {
+      "signal": "hospital",
+      "accepted": [],
+      "difficulty": 1,
+      "theme": "city"
     },
     {
       "signal": "school",
       "accepted": [],
-      "difficulty": 2,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "scissors",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "seashell",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "shark",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "sheep",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "skateboard",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "snowman",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "soccer",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "sock",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "spider",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "spoon",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "squirrel",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "star",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "suitcase",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "sunflower",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "swing",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "taco",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "telescope",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "tent",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "tiger",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "toothbrush",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "tractor",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "train",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "treasure",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "tree",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "trumpet",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "turtle",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "umbrella",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "volcano",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "wagon",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "watermelon",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "whale",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "window",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "wizard",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "zebra",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "zipper",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "anchor",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "ant",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "barbecue",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "baseball",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "bathtub",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "blanket",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "bowling",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "bread",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "broccoli",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "bubble",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "bus",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "button",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "cabin",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "canoe",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "carpet",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "castle",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "celery",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "chimney",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "circus",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "closet",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "comet",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "corn",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "desk",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "diamond",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "dice",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "doorbell",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "dragonfly",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "dresser",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "egg",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "engine",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "eraser",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "feather",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "frisbee",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "garage",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "glove",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "grapes",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "grasshopper",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "hairbrush",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "harmonica",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "haystack",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "helicopter",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "horseshoe",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "igloo",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "jelly",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "kayak",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "kettle",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "key",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "ladder",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "lemon",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "loaf",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "magnet",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "marble",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "mask",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "mitten",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "muffin",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "nest",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "noodle",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "ocean",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "pancake",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "parade",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "signal"
-    },
-    {
-      "signal": "peanut",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "pear",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "pepper",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "picnic",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "pineapple",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "plane",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "plate",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "potato",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "puppet",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "radio",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "raindrop",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "ring",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "robot",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "rope",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "saddle",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "sailboat",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "sandwich",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "saucer",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "scooter",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "shovel",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "slide",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "snail",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "soap",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "spaceship",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "spiderweb",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "sponge",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "stapler",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "strawberry",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "submarine",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "suitcase",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "sun",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "teapot",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "telephone",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "toaster",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "tomato",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "toolbox",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "train",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "turtle",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Animals",
-      "theme": "signal"
-    },
-    {
-      "signal": "violin",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "waffle",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "wheel",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "whistle",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "windmill",
-      "accepted": [],
-      "difficulty": 2,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "yo-yo",
-      "accepted": [],
-      "difficulty": 3,
-      "category": "Objects",
-      "theme": "signal"
-    },
-    {
-      "signal": "yogurt",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Food",
-      "theme": "signal"
-    },
-    {
-      "signal": "castle",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "medieval"
-    },
-    {
-      "signal": "dungeon",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "medieval"
-    },
-    {
-      "signal": "throne",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "crown",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "sword",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "shield",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "armor",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "dragon",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Animals",
-      "theme": "medieval"
-    },
-    {
-      "signal": "knight",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "wizard",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "potion",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "moat",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "medieval"
-    },
-    {
-      "signal": "drawbridge",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "joust",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "goblet",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "torch",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "scroll",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "catapult",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "kingdom",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "medieval"
-    },
-    {
-      "signal": "village",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "medieval"
-    },
-    {
-      "signal": "tavern",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "medieval"
-    },
-    {
-      "signal": "dungeon",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "medieval"
-    },
-    {
-      "signal": "princess",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "king",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "queen",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "squire",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "hero",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "helmet",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "banner",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "medieval"
-    },
-    {
-      "signal": "stable",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "medieval"
-    },
-    {
-      "signal": "horse",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Animals",
-      "theme": "medieval"
-    },
-    {
-      "signal": "falcon",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Animals",
-      "theme": "medieval"
-    },
-    {
-      "signal": "rocket",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "planet",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "space"
-    },
-    {
-      "signal": "asteroid",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "comet",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "galaxy",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "space"
-    },
-    {
-      "signal": "nebula",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "space"
-    },
-    {
-      "signal": "astronaut",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "spaceship",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "satellite",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "telescope",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "moon",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "space"
-    },
-    {
-      "signal": "mars",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "space"
-    },
-    {
-      "signal": "jupiter",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "space"
-    },
-    {
-      "signal": "orbit",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "alien",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Animals",
-      "theme": "space"
-    },
-    {
-      "signal": "meteor",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "spacesuit",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "airlock",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "launchpad",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "space"
-    },
-    {
-      "signal": "rover",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "star",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "blackhole",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "space"
-    },
-    {
-      "signal": "wormhole",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "space"
-    },
-    {
-      "signal": "captain",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "navigator",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "laser",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "space"
-    },
-    {
-      "signal": "pirate",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "captain",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "treasure",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "island",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "pirates"
-    },
-    {
-      "signal": "ship",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "sail",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "anchor",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "cannon",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "parrot",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Animals",
-      "theme": "pirates"
-    },
-    {
-      "signal": "map",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "compass",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "gold",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "doubloon",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "cutlass",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "plank",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
-    },
-    {
-      "signal": "harbor",
-      "accepted": [],
-      "difficulty": 1,
-      "category": "Places",
-      "theme": "pirates"
-    },
-    {
-      "signal": "lagoon",
-      "accepted": [],
       "difficulty": 1,
-      "category": "Places",
-      "theme": "pirates"
+      "theme": "city"
     },
     {
-      "signal": "reef",
+      "signal": "post office",
       "accepted": [],
       "difficulty": 1,
-      "category": "Places",
-      "theme": "pirates"
+      "theme": "city"
     },
     {
-      "signal": "kraken",
+      "signal": "city hall",
       "accepted": [],
       "difficulty": 1,
-      "category": "Animals",
-      "theme": "pirates"
+      "theme": "city"
     },
     {
-      "signal": "mermaid",
+      "signal": "hotel",
       "accepted": [],
       "difficulty": 1,
-      "category": "Animals",
-      "theme": "pirates"
+      "theme": "city"
     },
     {
-      "signal": "mutiny",
+      "signal": "bank",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
+      "theme": "city"
     },
     {
-      "signal": "flag",
+      "signal": "clock tower",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
+      "theme": "city"
     },
     {
-      "signal": "rum",
+      "signal": "street musician",
       "accepted": [],
       "difficulty": 1,
-      "category": "Food",
-      "theme": "pirates"
+      "theme": "city"
     },
     {
-      "signal": "chest",
+      "signal": "pigeon",
       "accepted": [],
       "difficulty": 1,
-      "category": "Objects",
-      "theme": "pirates"
+      "theme": "city"
     },
     {
-      "signal": "beach",
+      "signal": "graffiti",
       "accepted": [],
       "difficulty": 1,
-      "category": "Places",
-      "theme": "pirates"
+      "theme": "city"
     }
   ]
 }

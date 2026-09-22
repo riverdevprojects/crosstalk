@@ -1,20 +1,18 @@
 import SwiftUI
 
-// MARK: - Themes (unchanged data, refreshed party palette)
-
+// A theme chooses both the words and the illustrated world.
 struct GameTheme: Identifiable, Equatable {
-    let id: String, name: String, symbol: String, receiver: String, transmitter: String, teamAIcon: String, teamBIcon: String
-    let aColors: [Color], bColors: [Color]
-    static let all = [
-        GameTheme(id: "signal", name: "Signal Ops", symbol: "antenna.radiowaves.left.and.right", receiver: "Receiver", transmitter: "Transmitter", teamAIcon: "wave.3.right.circle.fill", teamBIcon: "bolt.circle.fill", aColors: [.blue, .cyan, .black], bColors: [.red, .orange, .black]),
-        GameTheme(id: "medieval", name: "Medieval", symbol: "building.columns.fill", receiver: "Hero", transmitter: "Squire", teamAIcon: "flag.fill", teamBIcon: "flag.2.crossed.fill", aColors: [.blue, .purple, .black], bColors: [.red, .brown, .black]),
-        GameTheme(id: "space", name: "Space", symbol: "sparkles", receiver: "Captain", transmitter: "Navigator", teamAIcon: "moon.stars.fill", teamBIcon: "sun.max.fill", aColors: [.indigo, .blue, .black], bColors: [.pink, .orange, .black]),
-        GameTheme(id: "pirates", name: "Pirates", symbol: "sailboat.fill", receiver: "Captain", transmitter: "Crewmate", teamAIcon: "drop.fill", teamBIcon: "flame.fill", aColors: [.teal, .blue, .black], bColors: [.red, .yellow, .black])
-    ]
+    let definition: ThemeDefinition
+    var id: String { definition.id }
+    var name: String { definition.name }
+    var symbol: String { definition.symbol }
+    var background: String { definition.background }
+    var receiver: String { "Guesser" }
+    var transmitter: String { "Hint giver" }
+    var teamAIcon: String { "circle.fill" }
+    var teamBIcon: String { "diamond.fill" }
+    static let all = ThemeDefinition.all.map { GameTheme(definition: $0) }
 }
-
-let categories = ["Everything", "Animals", "Food", "Places", "Objects"]
-let categoryIcons: [String: String] = ["Everything": "square.grid.2x2.fill", "Animals": "pawprint.fill", "Food": "fork.knife", "Places": "map.fill", "Objects": "cube.fill"]
 
 // MARK: - Party design system
 
@@ -39,8 +37,8 @@ enum CT {
     static let cyan = Color(red: 0.25, green: 0.78, blue: 0.95)
 
     // Team identity
-    static let teamA: [Color] = [Color(red: 0.24, green: 0.62, blue: 1.0), Color(red: 0.18, green: 0.82, blue: 0.92)]
-    static let teamB: [Color] = [Color(red: 1.0, green: 0.36, blue: 0.62), Color(red: 1.0, green: 0.52, blue: 0.24)]
+    static let teamA: [Color] = [Color(red: 0.12, green: 0.35, blue: 0.70), Color(red: 0.04, green: 0.40, blue: 0.48)]
+    static let teamB: [Color] = [Color(red: 0.70, green: 0.12, blue: 0.33), Color(red: 0.65, green: 0.25, blue: 0.06)]
     static func team(_ t: TeamId) -> [Color] { t == .A ? teamA : teamB }
 
     static func font(_ size: CGFloat, _ weight: Font.Weight = .heavy) -> Font {
@@ -59,17 +57,19 @@ struct ContentView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showingRules = false
     @State private var confirmingLeave = false
+    @State private var confirmingReset = false
+    @Environment(\.scenePhase) private var scenePhase
     var theme: GameTheme { GameTheme.all.first { $0.id == store.state.config.themeId } ?? GameTheme.all[0] }
 
     var body: some View {
         ZStack {
-            PartyBackground()
+            PartyBackground(theme: theme)
             VStack(spacing: 8) {
                 if store.state.status != .lobby {
                     HStack {
                         Button("Leave room") { confirmingLeave = true }
                         Spacer()
-                        if store.isHost { Button("Return to lobby") { store.send(.reset) } }
+                        if store.isHost { Button("Return to lobby") { confirmingReset = true } }
                     }
                     .font(CT.font(16, .bold)).foregroundStyle(.white).padding(.horizontal, 20)
                 }
@@ -78,15 +78,22 @@ struct ContentView: View {
                 if let notice = store.state.notice {
                     Text(notice).font(CT.font(15, .medium)).foregroundStyle(.white).padding(.horizontal)
                 }
+                if let message = store.syncMessage {
+                    HStack {
+                        Text(message).font(.callout)
+                        Button("Sync game") { store.syncGame() }.font(.callout.bold()).frame(minHeight: 44)
+                    }
+                    .padding(12).foregroundStyle(CT.ink).background(CT.panel, in: RoundedRectangle(cornerRadius: 16)).padding(.horizontal)
+                }
                 if let error = store.network.connectionError {
-                    VStack(spacing: 12) {
+                    ScrollView { VStack(spacing: 12) {
                         Text(error).font(CT.font(17, .bold))
                         if store.network.mode == .joining {
                             Button("Retry joining") { store.retryJoin() }.buttonStyle(PartyButton.primary)
                         }
                         Button("Leave room") { leave() }.buttonStyle(PartyButton.secondary)
                     }
-                    .padding().background(CT.panel).foregroundStyle(CT.ink).cornerRadius(20).padding()
+                    .padding().background(CT.panel).foregroundStyle(CT.ink).cornerRadius(20).padding() }
                 } else {
                     content
                 }
@@ -94,6 +101,14 @@ struct ContentView: View {
         }
         .transaction { if reduceMotion { $0.animation = nil; $0.disablesAnimations = true } }
         .tint(CT.magenta)
+        .onChange(of: scenePhase) { phase in
+            if phase == .active, store.activePlayerId != nil, store.network.connectionError == nil {
+                store.syncGame()
+            }
+        }
+        .confirmationDialog("Return everyone to the lobby?", isPresented: $confirmingReset, titleVisibility: .visible) {
+            Button("Reset match", role: .destructive) { store.send(.reset) }
+        } message: { Text("This clears the current scores and round for every player.") }
         .sheet(isPresented: $showingRules) { RulesView() }
         .confirmationDialog("Leave this room?", isPresented: $confirmingLeave, titleVisibility: .visible) {
             Button("Leave room", role: .destructive) { leave() }
@@ -129,7 +144,7 @@ struct ContentView: View {
             PartyScroll { HostLobby(theme: theme, onLeave: leave) }
                 .transition(.move(edge: .trailing).combined(with: .opacity))
         case .joinCode:
-            if !store.network.connectedNames.isEmpty {
+            if store.state.players.count > 1 && !store.network.connectedNames.isEmpty {
                 PartyScroll { PlayerLobby(theme: theme, onLeave: leave) }
                     .transition(.opacity)
             } else {
@@ -165,37 +180,19 @@ struct PartyScroll<Content: View>: View {
 // MARK: - Animated background
 
 struct PartyBackground: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var float = false
+    let theme: GameTheme
     var body: some View {
-        ZStack {
-            LinearGradient(colors: [CT.bgTop, CT.bgMid, CT.bgBot], startPoint: .topLeading, endPoint: .bottomTrailing)
-                .ignoresSafeArea()
-            // soft glow blobs
-            Circle().fill(Color.white.opacity(0.16)).frame(width: 320).blur(radius: 30)
-                .offset(x: -130, y: float ? -320 : -290)
-            Circle().fill(CT.gold.opacity(0.22)).frame(width: 240).blur(radius: 26)
-                .offset(x: 150, y: float ? 300 : 340)
-            Circle().fill(CT.cyan.opacity(0.18)).frame(width: 200).blur(radius: 24)
-                .offset(x: 140, y: float ? -180 : -150)
-            // decorative party shapes
-            decor("music.note", size: 40, x: -140, y: -120, rot: -18, opacity: 0.18)
-            decor("star.fill", size: 30, x: 150, y: -60, rot: 12, opacity: 0.22)
-            decor("sparkles", size: 46, x: -120, y: 260, rot: 0, opacity: 0.20)
-            decor("music.note", size: 28, x: 130, y: 150, rot: 20, opacity: 0.16)
-            decor("circle.fill", size: 16, x: -60, y: -300, rot: 0, opacity: 0.22)
-            decor("star.fill", size: 18, x: -160, y: 60, rot: -10, opacity: 0.18)
+        GeometryReader { geometry in
+            Image(theme.background)
+                .resizable()
+                .scaledToFill()
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .clipped()
+                .overlay(Color.black.opacity(0.48))
+                .overlay(LinearGradient(colors: [.black.opacity(0.25), .clear, .black.opacity(0.35)], startPoint: .top, endPoint: .bottom))
         }
+        .ignoresSafeArea()
         .accessibilityHidden(true)
-        .onChange(of: reduceMotion) { if $0 { float = false } }
-        .onAppear { if !reduceMotion { withAnimation(.easeInOut(duration: 6).repeatForever(autoreverses: true)) { float = true } } }
-    }
-    func decor(_ symbol: String, size: CGFloat, x: CGFloat, y: CGFloat, rot: Double, opacity: Double) -> some View {
-        Image(systemName: symbol)
-            .font(.system(size: size, weight: .black))
-            .foregroundStyle(.white.opacity(opacity))
-            .rotationEffect(.degrees(rot))
-            .offset(x: x, y: float ? y - 14 : y + 14)
     }
 }
 
@@ -234,8 +231,8 @@ struct SectionLabel: View {
     var color: Color = CT.magenta
     var body: some View {
         HStack(spacing: 8) {
-            if let icon { Image(systemName: icon) }
-            Text(text.uppercased())
+            if let icon { Image(systemName: icon).foregroundStyle(color).accessibilityHidden(true) }
+            Text(text.uppercased()).foregroundStyle(CT.ink)
         }
         .font(CT.font(15, .black))
         .foregroundStyle(color)
@@ -278,8 +275,8 @@ struct PartyButton: ButtonStyle {
 }
 
 extension PartyButton {
-    static var primary: PartyButton { PartyButton(fill: [CT.magenta, CT.pink]) }
-    static var go: PartyButton { PartyButton(fill: [CT.green, Color(red: 0.16, green: 0.68, blue: 0.42)]) }
+    static var primary: PartyButton { PartyButton(fill: [Color(red: 0.65, green: 0.10, blue: 0.40), Color(red: 0.72, green: 0.18, blue: 0.40)]) }
+    static var go: PartyButton { PartyButton(fill: [Color(red: 0.08, green: 0.43, blue: 0.24), Color(red: 0.05, green: 0.35, blue: 0.20)]) }
     static var gold: PartyButton { PartyButton(fill: [CT.gold, CT.orange], fg: CT.ink) }
     static var secondary: PartyButton { PartyButton(fill: [Color(white: 0.97), Color(white: 0.90)], fg: CT.ink) }
     static func team(_ t: TeamId) -> PartyButton { PartyButton(fill: CT.team(t)) }
@@ -335,6 +332,7 @@ struct StatusPill: View {
 
 /// Tactile [-] N [+] control.
 struct GameStepper: View {
+    @Environment(\.dynamicTypeSize) private var textSize
     let label: String
     let icon: String
     let display: String
@@ -344,24 +342,33 @@ struct GameStepper: View {
     var body: some View {
         VStack(spacing: 10) {
             SectionLabel(text: label, icon: icon, color: accent)
-            HStack(spacing: 14) {
-                roundBtn("minus", enabled: canDown, action: onDown).accessibilityLabel("Decrease \(label)")
-                Text(display)
-                    .font(CT.font(30, .black))
-                    .foregroundStyle(CT.ink)
+            if textSize.isAccessibilitySize {
+                Text(display).font(.title2.bold()).foregroundStyle(CT.ink)
+                    .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
-                    .contentTransition(.numericText())
-                roundBtn("plus", enabled: canUp, action: onUp).accessibilityLabel("Increase \(label)")
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack(spacing: 14) { decrease; increase }
+            } else {
+                HStack(spacing: 14) {
+                    decrease
+                    Text(display).font(CT.font(30, .black)).foregroundStyle(CT.ink)
+                        .frame(maxWidth: .infinity).contentTransition(.numericText())
+                    increase
+                }
             }
         }
     }
+    var decrease: some View {
+        roundBtn("minus", enabled: canDown, action: onDown).accessibilityLabel("Decrease \(label)")
+    }
+    var increase: some View {
+        roundBtn("plus", enabled: canUp, action: onUp).accessibilityLabel("Increase \(label)")
+    }
     func roundBtn(_ symbol: String, enabled: Bool, action: @escaping () -> Void) -> some View {
-        Button {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { action() }
-        } label: {
-            Image(systemName: symbol).font(CT.font(20, .black))
+        Button(action: action) {
+            Image(systemName: symbol).font(.system(size: 24, weight: .black))
         }
-        .buttonStyle(PartyButton(fill: enabled ? [accent, accent.opacity(0.8)] : [Color(white: 0.85)], fg: .white))
+        .buttonStyle(PartyButton(fill: enabled ? [CT.ink, CT.inkSoft] : [Color(white: 0.85)], fg: .white))
         .frame(minWidth: 64, minHeight: 44)
         .disabled(!enabled)
     }
@@ -403,7 +410,8 @@ struct LogoHeader: View {
                 }
                 .rotationEffect(.degrees(wiggle ? -6 : 6))
                 Text("CROSSTALK")
-                    .font(CT.font(40, .black))
+                    .font(.system(size: 36, weight: .black, design: .rounded))
+                    .accessibilityLabel("Crosstalk")
                     .foregroundStyle(.white)
                     .kerning(0)
                     .lineLimit(1)
@@ -587,7 +595,7 @@ struct HostLobby: View {
             RoomCodeCard()
             GamePanel(accent: CT.gold) {
                 SectionLabel(text: "Host Control Center", icon: "crown.fill", color: CT.orange)
-                Text("Pick the theme, category and settings, sort the teams, then start. Each round a random player on each team becomes the one who has to guess.")
+                Text("Choose a world to explore. Its theme sets the words and the scenery for everyone. Sort the teams, then start.")
                     .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
             }
             HostSettings(theme: theme)
@@ -698,41 +706,9 @@ struct HostSettings: View {
     let theme: GameTheme
     var body: some View {
         GamePanel(accent: CT.purple) {
-            SectionLabel(text: "Host Setup", icon: "slider.horizontal.3", color: CT.purple)
-
-            SectionLabel(text: "Theme", icon: "paintpalette.fill", color: CT.magenta)
-            VStack(spacing: 10) {
-                ForEach(GameTheme.all) { t in
-                    let selected = store.state.config.themeId == t.id
-                    Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { store.send(.setTheme(t.id)) } } label: {
-                        HStack {
-                            Image(systemName: t.symbol)
-                            Text(t.name.uppercased())
-                            Spacer()
-                            if selected { Image(systemName: "checkmark.circle.fill") }
-                        }
-                    }
-                    .buttonStyle(selected ? PartyButton(fill: [CT.purple, CT.magenta]) : PartyButton.secondary)
-                }
-            }
-
-            SectionLabel(text: "Category", icon: "square.grid.2x2.fill", color: CT.cyan)
-            VStack(spacing: 10) {
-                ForEach(categories, id: \.self) { cat in
-                    let on = store.state.config.category == cat
-                    Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { store.send(.setCategory(cat)) } } label: {
-                        HStack {
-                            Image(systemName: categoryIcons[cat] ?? "circle.fill")
-                            Text(cat.uppercased())
-                            Spacer()
-                            if on { Image(systemName: "checkmark.circle.fill") }
-                        }
-                    }
-                    .buttonStyle(on ? PartyButton(fill: [CT.cyan, Color(red: 0.16, green: 0.6, blue: 0.85)]) : PartyButton.secondary)
-                    .disabled(!store.categoryAvailable(cat))
-                    .accessibilityHint(store.categoryAvailable(cat) ? "" : "No words in this theme")
-                }
-            }
+            SectionLabel(text: "Choose your world", icon: "paintpalette.fill", color: CT.magenta)
+            Text("Your theme sets the words and scenery.").font(.subheadline).foregroundStyle(CT.inkSoft)
+            ThemePicker()
 
             GameStepper(label: "Rounds", icon: "flag.checkered", display: "Best of \(store.state.config.roundsToWin * 2 - 1)", accent: CT.magenta,
                         canDown: store.state.config.roundsToWin > 2, canUp: store.state.config.roundsToWin < 4,
@@ -742,6 +718,45 @@ struct HostSettings: View {
                         canDown: store.state.config.maxStatics > 2, canUp: store.state.config.maxStatics < 3,
                         onDown: { store.send(.setMaxStatics(store.state.config.maxStatics - 1)) },
                         onUp: { store.send(.setMaxStatics(store.state.config.maxStatics + 1)) })
+        }
+    }
+}
+
+struct ThemePicker: View {
+    @EnvironmentObject var store: GameStore
+    @Environment(\.dynamicTypeSize) private var textSize
+    var body: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: textSize.isAccessibilitySize ? 1 : 2), spacing: 12) {
+            ForEach(GameTheme.all) { theme in
+                let selected = store.state.config.themeId == theme.id
+                Button { store.send(.setTheme(theme.id)) } label: {
+                    VStack(alignment: .leading, spacing: 8) {
+                        GeometryReader { geometry in
+                            Image(theme.background).resizable().scaledToFill()
+                                .frame(width: geometry.size.width, height: 125, alignment: .top).clipped()
+                        }.frame(height: 125).accessibilityHidden(true)
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack(alignment: .top) {
+                                Text(theme.name).font(.headline)
+                                Spacer(minLength: 0)
+                                if selected { Image(systemName: "checkmark.circle.fill").foregroundStyle(CT.purple) }
+                            }
+                            Text(theme.definition.description).font(.caption).foregroundStyle(CT.inkSoft)
+                            Text("\(store.wordCount(for: theme.id)) words").font(.caption.bold())
+                        }.padding(.horizontal, 10).padding(.bottom, 12)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .foregroundStyle(CT.ink)
+                    .background(Color(white: 0.97))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(selected ? CT.purple : Color.gray.opacity(0.25), lineWidth: selected ? 3 : 1))
+                }
+                .buttonStyle(.plain)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("\(theme.name). \(theme.definition.description). \(store.wordCount(for: theme.id)) words")
+                .accessibilityAddTraits(selected ? [.isSelected] : [])
+                .accessibilityHint("Sets the words and background for everyone")
+            }
         }
     }
 }
@@ -774,22 +789,22 @@ struct StartCard: View {
             && store.state.players.filter { $0.team == .B }.count >= 2
         GamePanel(accent: CT.green) {
             HStack(spacing: 8) {
-                Image(systemName: categoryIcons[store.state.config.category] ?? "square.grid.2x2.fill").foregroundStyle(CT.green)
-                Text("Final category: \(store.state.config.category)").font(CT.font(16, .bold)).foregroundStyle(CT.ink)
+                Image(systemName: ThemeDefinition.find(store.state.config.themeId).symbol).foregroundStyle(CT.ink)
+                Text("World: \(ThemeDefinition.find(store.state.config.themeId).name)").font(CT.font(16, .bold)).foregroundStyle(CT.ink)
             }
             Button { store.startOrNextRound() } label: {
                 Label("START GAME", systemImage: "play.fill")
             }
-            .buttonStyle(PartyButton(fill: [CT.green, Color(red: 0.16, green: 0.68, blue: 0.42)], big: true))
-            .disabled(!ready || store.availableWords.isEmpty)
+            .buttonStyle(PartyButton(fill: [Color(red: 0.08, green: 0.43, blue: 0.24), Color(red: 0.05, green: 0.35, blue: 0.20)], big: true))
+            .disabled(!ready || !store.canCompleteMatch)
             .scaleEffect(ready && pulse ? 1.03 : 1.0)
             .onAppear { if ready && !reduceMotion { withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true } } }
             .onChange(of: ready) { newValue in
                 pulse = false
                 if newValue && !reduceMotion { withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true } }
             }
-            if store.availableWords.isEmpty {
-                Text("No words are available. Choose another theme or category.")
+            if !store.canCompleteMatch {
+                Text("This theme needs at least \(store.state.config.roundsToWin * 2 - 1) unique words for this match. Choose another theme or fewer rounds.")
                     .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft)
             }
             if !ready {
@@ -883,7 +898,7 @@ struct RoundView: View {
     let theme: GameTheme
     var body: some View {
         VStack(spacing: 20) {
-            LogoHeader(subtitle: "ROUND \(store.state.roundNumber)")
+            LogoHeader(subtitle: "\(theme.name.uppercased()) • ROUND \(store.state.roundNumber)")
             HUDView(theme: theme)
             if let p = store.activePlayer {
                 VStack(spacing: 8) {
@@ -987,7 +1002,7 @@ struct ClueView: View {
         let isActive = store.activePlayerId == active
         GamePanel(accent: CT.magenta) {
             if let p = store.activePlayer, !store.isReceiver(p) {
-                Text("SIGNAL").font(CT.font(13, .black)).foregroundStyle(CT.magenta)
+                Text("SECRET WORD").font(CT.font(13, .black)).foregroundStyle(CT.magenta)
                 Text(store.state.round?.signal.uppercased() ?? "")
                     .font(CT.font(36, .black)).foregroundStyle(CT.ink).minimumScaleFactor(0.6).multilineTextAlignment(.center)
             } else {
@@ -1033,6 +1048,7 @@ struct LastHintsView: View {
 
 struct DecisionView: View {
     @EnvironmentObject var store: GameStore
+    @Environment(\.dynamicTypeSize) private var textSize
     let theme: GameTheme
     @State private var guess = ""
     @State private var confirming = false
@@ -1053,8 +1069,9 @@ struct DecisionView: View {
                     .padding(.horizontal, 16).padding(.vertical, 8)
                     .background(Capsule().fill(LinearGradient(colors: CT.team(team ?? .A), startPoint: .top, endPoint: .bottom)))
                 GameField(placeholder: "Type your guess", text: $guess, big: true)
-                HStack(spacing: 12) {
-                    Button("PASS") { if let team { store.send(.receiverPass(team)) }; guess = "" }
+                let actionsLayout = textSize.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 12)) : AnyLayout(HStackLayout(spacing: 12))
+                actionsLayout {
+                    Button("PASS") { if let team, store.send(.receiverPass(team)) { guess = "" } }
                         .buttonStyle(PartyButton.secondary)
                     Button("LOCK GUESS") { confirming = true }
                         .buttonStyle(PartyButton.go)
@@ -1072,7 +1089,7 @@ struct DecisionView: View {
         }
         .alert("Lock it in?", isPresented: $confirming) {
             Button("Cancel", role: .cancel) {}
-            Button("Submit") { if let team { store.send(.receiverGuess(team, guess)) }; guess = "" }
+            Button("Submit") { if let team, store.send(.receiverGuess(team, guess)) { guess = "" } }
         } message: { Text(guess) }
     }
 }
@@ -1085,15 +1102,29 @@ struct RoundOverView: View {
                 .font(.system(size: 40, weight: .black))
                 .foregroundStyle(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom))
             Text("ROUND OVER").font(CT.font(30, .black)).foregroundStyle(CT.ink)
-            Text("Signal: \(store.state.round?.signal ?? "")").font(CT.font(18, .bold)).foregroundStyle(CT.inkSoft)
-            Text("\(store.teamName(store.state.round?.winner ?? .A)) wins by \(store.state.round?.winReason == .lockout ? "lockout" : "correct guess")!")
-                .font(CT.font(17, .black)).foregroundStyle(CT.ink).multilineTextAlignment(.center)
-            LastHintsView()
+            RoundRecapView()
             if store.isHost {
                 Button("NEXT ROUND") { store.startOrNextRound() }.buttonStyle(PartyButton.go)
             } else {
                 Text("Waiting for the host to start the next round.").font(CT.font(17, .bold))
             }
+        }
+    }
+}
+
+struct RoundRecapView: View {
+    @EnvironmentObject var store: GameStore
+    var body: some View {
+        if let round = store.state.round, round.phase == .roundOver {
+            Text("Answer: \(round.signal)").font(CT.font(24, .bold)).foregroundStyle(CT.ink)
+                .multilineTextAlignment(.center).accessibilityIdentifier("round-answer")
+            Text("\(store.teamName(round.winner ?? .A)) wins by \(round.winReason == .lockout ? "lockout" : "correct guess")!")
+                .font(.headline).multilineTextAlignment(.center)
+            if let turn = round.history.last, let guess = (turn.owningAction ?? turn.opposingAction)?.guess {
+                Text("Final guess: “\(guess)”").font(.body).multilineTextAlignment(.center)
+                    .accessibilityIdentifier("final-guess")
+            }
+            LastHintsView()
         }
     }
 }
@@ -1108,14 +1139,17 @@ struct MatchOverView: View {
                     .font(.system(size: 56, weight: .black))
                     .foregroundStyle(LinearGradient(colors: [CT.gold, CT.orange], startPoint: .top, endPoint: .bottom))
                     .shadow(color: CT.orange.opacity(0.5), radius: 8, y: 4)
-                Text("MATCH OVER").font(CT.font(34, .black)).foregroundStyle(CT.ink)
+                Text("\(store.teamName(store.state.round?.winner ?? .A)) wins the match!")
+                    .font(CT.font(30, .black)).foregroundStyle(CT.ink).multilineTextAlignment(.center)
+                    .accessibilityIdentifier("match-winner")
                 HStack(spacing: 12) {
                     scoreChip(.A)
                     scoreChip(.B)
                 }
+                RoundRecapView()
                 if store.isHost {
                     Button("NEW MATCH") { store.send(.reset) }
-                        .buttonStyle(PartyButton(fill: [CT.green, Color(red: 0.16, green: 0.68, blue: 0.42)], big: true))
+                        .buttonStyle(PartyButton(fill: [Color(red: 0.08, green: 0.43, blue: 0.24), Color(red: 0.05, green: 0.35, blue: 0.20)], big: true))
                 } else {
                     Text("Waiting for the host to start a new match…")
                         .font(CT.font(15, .medium)).foregroundStyle(CT.inkSoft).multilineTextAlignment(.center)
@@ -1147,6 +1181,7 @@ struct RulesView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     Text("Play with 4–8 nearby phones, with at least two players on each team.")
                     Text("One player hosts. Everyone else enters the host's room code and allows Local Network access. All phones need the same app version.")
+                    Text("The host chooses a theme. It sets both the secret words and the illustrated background for everyone—there is no separate category to choose.")
                     Text("Each round, one random player on each team guesses. Everyone else sees the same secret answer. Keep your phone hidden from the guessers.")
                     Text("The active hint giver submits one word. Hyphens and apostrophes are allowed; the answer and close spellings are not. The other team's guesser acts first, then the hint giver's guesser. Either can pass without penalty.")
                     Text("A correct guess wins the round. Each wrong guess adds one Static. Reaching the Static limit gives the round to the other team. Hints alternate between teams and rotate between hint givers.")
